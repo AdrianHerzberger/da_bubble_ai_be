@@ -1,6 +1,6 @@
 from abc import ABC, abstractclassmethod
 
-class DataManagerInterface(ABC):
+class UserDataManagerInterface(ABC):
     @abstractclassmethod
     def create_user(self, user_email, user_name, user_passwor):
         pass

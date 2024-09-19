@@ -1,10 +1,10 @@
 from .user_storage import db, User
-from .data_manager_interface import DataManagerInterface
+from .user_data_manager_interface import UserDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class UserDataManager(DataManagerInterface):
+class UserDataManager(UserDataManagerInterface):
     def __init__(self, db_instance):
         self.db = db_instance
 
@@ -22,7 +22,7 @@ class UserDataManager(DataManagerInterface):
             return True
             
         except Exception as e:
-            print(f"Error updating user profile picture: {e}")
+            print(f"Error creating user: {e}")
             self.db.session.rollback()
             return False
 
