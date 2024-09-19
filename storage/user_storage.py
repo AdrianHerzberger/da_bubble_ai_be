@@ -9,7 +9,9 @@ class User(db.Model):
     user_email = db.Column(db.String(200), nullable=False)  
     user_name = db.Column(db.String(100), nullable=False) 
     user_password = db.Column(db.String(255), nullable=False) 
-
+    user_profile_picture_url = db.Column(db.String(255), nullable=True)
+    
+    #channels = relationship('Channel', back_populates='user')
 
     def __repr__(self):
         return f'<User created with {self.user_name} {self.user_password}>'

@@ -29,7 +29,8 @@
                   "properties": {
                     "id": { "type": "integer" },
                     "user_name": { "type": "string" },
-                    "user_email": { "type": "string" }
+                    "user_email": { "type": "string" },
+                    "user_profile_picture_url": {"type": "string"}
                   }
                 }
               }
@@ -62,7 +63,8 @@
                   "properties": {
                     "id": { "type": "integer" },
                     "user_name": { "type": "string" },
-                    "email": { "type": "string" }
+                    "email": { "type": "string" },
+                    "user_profile_picture_url": {"type": "string"}
                   }
                 }
               }
@@ -101,7 +103,9 @@
                   "type": "object",
                   "properties": {
                     "message": { "type": "string" },
-                    "user_id": { "type": "integer" }
+                    "user_name": { "type": "string" },
+                    "user_email": { "type": "string", "format": "email" },
+                    "user_password": { "type": "string" }
                   }
                 }
               }
@@ -125,9 +129,10 @@
                 "type": "object",
                 "properties": {
                   "user_email": { "type": "string", "format": "email" },
-                  "user_password": { "type": "string" }
+                  "user_password": { "type": "string" },
+                  "user_profile_picture_url": {"type": "string"}
                 },
-                "required": ["user_email", "user_password"]
+                "required": ["user_email", "user_password", "user_profile_picture_url"]
               }
             }
           }
@@ -141,7 +146,9 @@
                   "type": "object",
                   "properties": {
                     "message": { "type": "string" },
-                    "user_id": { "type": "integer" }
+                    "user_email": { "type": "string", "format": "email" },
+                    "user_password": { "type": "string" },
+                    "user_profile_picture_url": {"type": "string"}
                   }
                 }
               }
