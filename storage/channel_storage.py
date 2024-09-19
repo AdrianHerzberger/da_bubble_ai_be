@@ -11,7 +11,7 @@ class Channel(db.Model):
     channel_color = db.Column(db.String(50), nullable=True)
     user_id = db.Column(db.String, ForeignKey('users.id'), nullable=False)
     
-    #user = relationship('User', back_populates='channels')
+    user = relationship('User', back_populates='channels')
     
     def __repr__(self):
         return f'<Channel created with {self.channel_name}>'
