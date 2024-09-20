@@ -9,7 +9,7 @@ class Channel(db.Model):
     channel_name = db.Column(db.String(50), nullable=False)
     channel_description = db.Column(db.String(100), nullable=False)
     channel_color = db.Column(db.String(50), nullable=True)
-    user_id = db.Column(db.String, ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     
     user = relationship('User', back_populates='channels')
     

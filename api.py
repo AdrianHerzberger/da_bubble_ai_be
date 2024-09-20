@@ -27,7 +27,7 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 @app.route("/api/users/<int:user_id>", methods=["GET"])
-def get_user(user_id):
+def get_user_by_id(user_id):
     user = user_data_manager.get_user_by_id(user_id)
     try:  
         if user:
@@ -101,6 +101,7 @@ def sign_in_user():
     
     
 @app.route("/api/create_channel", methods=["POST"])
+@jwt_required()
 def create_channel():
     data = request.get_json()
     channel_name = data.get("channel_name")

@@ -1,0 +1,11 @@
+# Check the current migration status of your database by running: 
+- alembic current
+
+# Upgrade the Database to the Latest Migration
+- alembic upgrade head
+
+# Create the New Revision
+- alembic revision --autogenerate -m "create channels and users tables"
+
+# If Upgrade Head Fails
+- alembic upgrade head
