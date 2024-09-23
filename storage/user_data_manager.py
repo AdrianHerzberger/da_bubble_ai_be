@@ -19,8 +19,7 @@ class UserDataManager(UserDataManagerInterface):
             )
             self.db.session.add(new_user)
             self.db.session.commit()
-            return True
-            
+            return True     
         except Exception as e:
             print(f"Error creating user: {e}")
             self.db.session.rollback()
@@ -54,7 +53,6 @@ class UserDataManager(UserDataManagerInterface):
                 user_id_query.user_profile_picture_url = user_profile_picture_url
                 self.db.session.commit()
                 return True
-
         except Exception as e:
             print(f"Error updating user profile picture: {e}")
             self.db.session.rollback()

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
-from storage.db_instance import db 
+from storage.db_instance import db
+from .channel_user_association_model import ChannelUserAssociation 
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -11,7 +12,8 @@ class User(db.Model):
     user_password = db.Column(db.String(255), nullable=False) 
     user_profile_picture_url = db.Column(db.String(255), nullable=True)
     
-    channels = relationship('Channel', back_populates='user')
+    channel_associations = relationship('ChannelUserAssociation', back_populates='user')
+    channels = relationship('Channel', secondary='channel_user_association', back_populates='users', viewonly=True)
 
     def __repr__(self):
         return f'<User created with {self.user_name} {self.user_password}>'

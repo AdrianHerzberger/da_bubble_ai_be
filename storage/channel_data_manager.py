@@ -16,7 +16,7 @@ class ChannelDataManager(ChannelDataManagerInterface):
             )
             self.db.session.add(new_channel)
             self.db.session.commit()
-            return new_channel 
+            return True 
         except Exception as e:
             print(f"Error creating channel: {e}")
             self.db.session.rollback()

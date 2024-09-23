@@ -7,6 +7,7 @@ from config import Config
 from storage.db_instance import db
 from storage.user_data_manager import UserDataManager
 from storage.channel_data_manager import ChannelDataManager
+from storage.channel_user_association_data_manager import ChannelUserAssociationManager
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -16,6 +17,7 @@ CORS(app)
 
 user_data_manager = UserDataManager(db)
 channel_data_manager = ChannelDataManager(db)
+channel_user_association_data_manager =  ChannelUserAssociationManager(db)
 
 SWAGGER_URL = "/api/docs"
 API_URL = "/static/blogcms.json"

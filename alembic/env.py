@@ -18,8 +18,8 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from storage.user_storage import User
-from storage.channel_storage import Channel
+from models.user_model import User
+from models.channel_model import Channel
 from storage.db_instance import db
 
 target_metadata = [db.Model.metadata]
