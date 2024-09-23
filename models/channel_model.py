@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
-from .db_instance import db 
+from storage.db_instance import db 
 
 class Channel(db.Model):
     __tablename__ = 'channels'

@@ -40,23 +40,50 @@ def get_user_by_id(user_id):
         else:
             return jsonify({"error": "User not found"}), 404
     except Exception as e:
-        print(f"Error getting user data: {e}")
-        return jsonify({"error": "Failed to get user data"}), 500
+        print(f"Error getting user data by id: {e}")
+        return jsonify({"error": "Failed to get user data by id"}), 500
     
     
 @app.route("/api/users/<user_email>", methods=["GET"])
 def get_user_by_email(user_email):
     user = user_data_manager.get_user_by_email(user_email)
-    if user:
-        return jsonify({
-            "id": user.id,
-            "user_name": user.user_name,
-            "user_email": user.user_email,
-            "user_profile_picture_url": user.user_profile_picture_url
-        })
-    else:
-        return jsonify({"error": "User not found"}), 404
+    try:
+        if user:
+            return jsonify({
+                "id": user.id,
+                "user_name": user.user_name,
+                "user_email": user.user_email,
+                "user_profile_picture_url": user.user_profile_picture_url
+            })
+        else:
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        print(f"Error getting user data by email: {e}")
+        return jsonify({"error": "Failed to get user data by email"}), 500
 
+    
+@app.route("/api/all_users", methods=["GET"])
+def get_all_user():
+    users = user_data_manager.get_all_users()
+    print(f"Get all users : {users}")
+    try: 
+        if users:
+            user_list = []
+            for user in users:
+                user_data = {
+                    "id" : user.id,
+                    "user_name": user.user_name,
+                    "user_email": user.user_email,
+                    "user_profile_picture_url": user.user_profile_picture_url
+                }
+                user_list.append(user_data)
+            return jsonify(user_list)
+        else:
+            return jsonify({"error": "Users not found"}), 404
+    except Exception as e:
+        print(f"Error getting all user data: {e}")
+        return jsonify({"error": "Failed to get all user data"}), 500
+        
     
 @app.route("/api/register_user", methods=["POST"])
 def register_user():

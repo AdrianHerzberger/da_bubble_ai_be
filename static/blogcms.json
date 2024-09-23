@@ -63,7 +63,7 @@
                   "properties": {
                     "id": { "type": "integer" },
                     "user_name": { "type": "string" },
-                    "email": { "type": "string" },
+                    "user_email": { "type": "string" },
                     "user_profile_picture_url": { "type": "string" }
                   }
                 }
@@ -71,6 +71,35 @@
             }
           },
           "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/all_users": {
+      "get": {
+        "summary": "Get all users",
+        "description": "Retrieve a list of all registered users",
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "user_name": { "type": "string" },
+                      "user_email": { "type": "string" },
+                      "user_profile_picture_url": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Users not found" },
+          "500": { "description": "Failed to get all user data" }
         }
       }
     },

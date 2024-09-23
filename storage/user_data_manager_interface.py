@@ -6,6 +6,10 @@ class UserDataManagerInterface(ABC):
         pass
     
     @abstractclassmethod
+    def get_all_users(self):
+        pass
+    
+    @abstractclassmethod
     def get_user(self, user_name, user_password):
         pass
     

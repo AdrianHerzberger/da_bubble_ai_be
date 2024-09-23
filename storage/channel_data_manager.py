@@ -1,4 +1,4 @@
-from .channel_storage import db, Channel
+from models.channel_model import db, Channel
 from .channel_data_manager_interface import ChannelDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 

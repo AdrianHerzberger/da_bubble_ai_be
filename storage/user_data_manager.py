@@ -1,4 +1,4 @@
-from .user_storage import db, User
+from models.user_model import db, User
 from .user_data_manager_interface import UserDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -25,6 +25,10 @@ class UserDataManager(UserDataManagerInterface):
             print(f"Error creating user: {e}")
             self.db.session.rollback()
             return False
+        
+    def get_all_users(self):
+        all_users = User.query.all()
+        return all_users
 
     def get_user(self, user_name, user_password):
         user = User.query.filter_by(user_name=user_name).first()
