@@ -28,7 +28,7 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
-@app.route("/api/users/<int:user_id>", methods=["GET"])
+@app.route("/api/get_user_by_id/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = user_data_manager.get_user_by_id(user_id)
     try:  
@@ -46,7 +46,7 @@ def get_user_by_id(user_id):
         return jsonify({"error": "Failed to get user data by id"}), 500
     
     
-@app.route("/api/users/<user_email>", methods=["GET"])
+@app.route("/api/get_user_by_email/<user_email>", methods=["GET"])
 def get_user_by_email(user_email):
     user = user_data_manager.get_user_by_email(user_email)
     try:
@@ -147,6 +147,24 @@ def create_channel():
         print(f"Error creating user: {e}")
         return jsonify({"error": "Failed to create user"}), 500
     
+
+@app.route("/api/get_channel_by_id/<int:channel_id>", methods=["GET"])
+def get_channel_by_id(channel_id):
+    channel = channel_data_manager.get_channel_by_id(channel_id)
+    
+    try:
+        if channel:
+            return jsonify({
+                "id": channel.id,
+                "channel_name": channel.channel_name,
+                "channel_description": channel.channel_description,
+                "channel_color": channel.channel_color,
+            })
+        else:
+            return jsonify({"error": "Channel not found"}), 404
+    except Exception as e:
+        print(f"Error getting channel data by id: {e}")
+        return jsonify({"error": "Failed to get channel data by id"}), 500
          
 if __name__ == "__main__":
     app.run(debug=True, port=5001)

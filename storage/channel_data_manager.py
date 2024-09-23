@@ -21,3 +21,7 @@ class ChannelDataManager(ChannelDataManagerInterface):
             print(f"Error creating channel: {e}")
             self.db.session.rollback()
             return False
+        
+    def get_channel_by_id(self, channel_id):
+        channel_id_query = Channel.query.filter_by(id=channel_id).first()
+        return channel_id_query
