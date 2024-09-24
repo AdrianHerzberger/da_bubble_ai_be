@@ -16,11 +16,11 @@ class ChannelDataManager(ChannelDataManagerInterface):
             )
             self.db.session.add(new_channel)
             self.db.session.commit()
-            return True 
+            return new_channel
         except Exception as e:
             print(f"Error creating channel: {e}")
             self.db.session.rollback()
-            return False
+            return None
         
     def get_channel_by_id(self, channel_id):
         channel_id_query = Channel.query.filter_by(id=channel_id).first()

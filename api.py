@@ -121,7 +121,7 @@ def sign_in_user():
                 "user_name" : user.user_name,
                 "user_profile_picture_url": user.user_profile_picture_url,
                 "access_token": access_token
-            }), 200
+            }), 201
         else:
             return jsonify({"error": "Invalid email or password"}), 401
     except Exception as e:
@@ -141,11 +141,17 @@ def create_channel():
     
     try:
         new_channel = channel_data_manager.create_channel(channel_name, channel_description, channel_color, user_id)
-        print(f"Result if channel: {new_channel}")
-        return jsonify({"message": "Channel created successfully"}), 201
+        
+        if new_channel:
+            return jsonify({
+                "message": "Channel created successfully",
+                "channel_id": new_channel.id 
+            }), 201
+        else:
+            return jsonify({"error": "Failed to create channel"}), 500
     except Exception as e:
-        print(f"Error creating user: {e}")
-        return jsonify({"error": "Failed to create user"}), 500
+        print(f"Error creating channel: {e}")
+        return jsonify({"error": "Failed to create channel"}), 500
     
 
 @app.route("/api/get_channel_by_id/<int:channel_id>", methods=["GET"])
@@ -165,6 +171,23 @@ def get_channel_by_id(channel_id):
     except Exception as e:
         print(f"Error getting channel data by id: {e}")
         return jsonify({"error": "Failed to get channel data by id"}), 500
+    
+    
+@app.route("/api/create_user_association_to_channel", methods=["POST"])
+def create_user_association_to_channel():
+    data = request.get_json()
+    user_id = data.get("user_id")    
+    channel_id = data.get("channel_id")
+    
+    try:
+        new_user_association_to_channel = channel_user_association_data_manager.create_channel_user_association(user_id, channel_id)
+        if new_user_association_to_channel:
+             return jsonify({
+                "message": "Channel user association created successfully",
+            }), 201
+    except Exception as e:
+        print(f"Error creating user association to channel: {e}")
+        return jsonify({"error": "Failed to create channel user association"}), 500
          
 if __name__ == "__main__":
     app.run(debug=True, port=5001)

@@ -19,11 +19,11 @@ class UserDataManager(UserDataManagerInterface):
             )
             self.db.session.add(new_user)
             self.db.session.commit()
-            return True     
+            return new_user     
         except Exception as e:
             print(f"Error creating user: {e}")
             self.db.session.rollback()
-            return False
+            return None
         
     def get_all_users(self):
         all_users = User.query.all()
