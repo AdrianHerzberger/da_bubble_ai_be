@@ -15,11 +15,11 @@ class ChannelUserAssociationManager(ChannelUserAssociationInterface):
             )
             self.db.session.add(new_channel_user_association)
             self.db.session.commit()
-            return new_channel_user_association
+            return True
         except Exception as e:
             print(f"Error creating channel user association: {e}")
             self.db.session.rollback()
-            return None
+            return False
 
     def get_all_users_in_channel(self, channel_id):
         channel = ChannelUserAssociation.query(

@@ -38,7 +38,7 @@ def get_user_by_id(user_id):
                 "user_name": user.user_name,
                 "user_email": user.user_email,
                 "user_profile_picture_url": user.user_profile_picture_url
-            })
+            }), 200
         else:
             return jsonify({"error": "User not found"}), 404
     except Exception as e:
@@ -52,11 +52,11 @@ def get_user_by_email(user_email):
     try:
         if user:
             return jsonify({
-                "id": user.id,
+                "user_id": user.id,
                 "user_name": user.user_name,
                 "user_email": user.user_email,
                 "user_profile_picture_url": user.user_profile_picture_url
-            })
+            }), 200
         else:
             return jsonify({"error": "User not found"}), 404
     except Exception as e:
@@ -73,13 +73,13 @@ def get_all_user():
             user_list = []
             for user in users:
                 user_data = {
-                    "id" : user.id,
+                    "user_id" : user.id,
                     "user_name": user.user_name,
                     "user_email": user.user_email,
                     "user_profile_picture_url": user.user_profile_picture_url
                 }
                 user_list.append(user_data)
-            return jsonify(user_list)
+            return jsonify(user_list), 200
         else:
             return jsonify({"error": "Users not found"}), 404
     except Exception as e:
@@ -161,7 +161,7 @@ def get_channel_by_id(channel_id):
     try:
         if channel:
             return jsonify({
-                "id": channel.id,
+                "channel_id": channel.id,
                 "channel_name": channel.channel_name,
                 "channel_description": channel.channel_description,
                 "channel_color": channel.channel_color,
