@@ -29,9 +29,20 @@ class ChannelUserAssociationManager(ChannelUserAssociationInterface):
         for user in users_in_channel:
             print(user.user_name, user.user_email)
 
-    def get_channel_associated_users(self, user_id):
-        user = ChannelUserAssociation.query(User).filter_by(id=user_id).first()
-
-        channels_for_user = user.channels
-        for channel in channels_for_user:
-            print(channel.channel_name, channel.channel_description)
+    def get_channel_associated_user(self, user_id):
+        try:
+            associations = ChannelUserAssociation.query.filter_by(user_id=user_id).all()
+            
+            channels_for_user = []
+            for association in associations:
+                channel = association.channel 
+                channels_for_user.append({
+                    "channel_id": channel.id,
+                    "channel_name": channel.channel_name,
+                    "channel_description": channel.channel_description,
+                    "channel_color": channel.channel_color
+                })
+            return channels_for_user
+        except SQLAlchemyError as e:
+            print(f"Error fetching channels for user {user_id}: {e}")
+            return None

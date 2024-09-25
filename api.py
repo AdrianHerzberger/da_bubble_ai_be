@@ -195,6 +195,20 @@ def get_all_channels():
         return jsonify({"error": "Failed to get channel data"}), 500
     
     
+@app.route("/api/channel_associated_user/<int:user_id>", methods=["GET"])
+def get_channel_associated_user(user_id):
+    channels_for_user = channel_user_association_data_manager.get_channel_associated_user(user_id)
+    
+    try:
+        if channels_for_user:
+            return jsonify(channels_for_user), 200
+        else:
+            return jsonify({"error": "No channels found for this user"}), 404
+    except Exception as e:
+        print(f"Error getting channel data: {e}")
+        return jsonify({"error": "Failed to get channel data"}), 500
+    
+    
 @app.route("/api/create_user_association_to_channel", methods=["POST"])
 def create_user_association_to_channel():
     data = request.get_json()

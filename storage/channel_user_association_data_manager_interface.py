@@ -10,5 +10,5 @@ class ChannelUserAssociationInterface(ABC):
         pass
     
     @abstractclassmethod
-    def get_channel_associated_users(self, user_id):
+    def get_channel_associated_user(self, user_id):
         pass
