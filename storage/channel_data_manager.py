@@ -25,3 +25,7 @@ class ChannelDataManager(ChannelDataManagerInterface):
     def get_channel_by_id(self, channel_id):
         channel_id_query = Channel.query.filter_by(id=channel_id).first()
         return channel_id_query
+    
+    def get_all_channels(self):
+        all_channels = Channel.query.all()
+        return all_channels

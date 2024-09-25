@@ -34,7 +34,7 @@ def get_user_by_id(user_id):
     try:  
         if user:
             return jsonify({
-                "id": user.id,
+                "user_id": user.id,
                 "user_name": user.user_name,
                 "user_email": user.user_email,
                 "user_profile_picture_url": user.user_profile_picture_url
@@ -67,7 +67,6 @@ def get_user_by_email(user_email):
 @app.route("/api/all_users", methods=["GET"])
 def get_all_user():
     users = user_data_manager.get_all_users()
-    print(f"Get all users : {users}")
     try: 
         if users:
             user_list = []
@@ -171,6 +170,29 @@ def get_channel_by_id(channel_id):
     except Exception as e:
         print(f"Error getting channel data by id: {e}")
         return jsonify({"error": "Failed to get channel data by id"}), 500
+    
+    
+@app.route("/api/all_channels", methods=["GET"])
+def get_all_channels():
+    channels = channel_data_manager.get_all_channels()
+    
+    try:
+        if channels:
+            channel_list = []
+            for channel in channels:
+                channel_data = {
+                    "channel_id": channel.id,
+                    "channel_name": channel.channel_name,
+                    "channel_description": channel.channel_description,
+                    "channnel_color": channel.channel_color
+                }
+                channel_list.append(channel_data)
+            return jsonify(channel_list), 200
+        else:
+            return jsonify({"error": "Channel data not found"}), 404
+    except Exception as e:
+        print(f"Error getting channel data: {e}")
+        return jsonify({"error": "Failed to get channel data"}), 500
     
     
 @app.route("/api/create_user_association_to_channel", methods=["POST"])
