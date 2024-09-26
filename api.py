@@ -13,11 +13,11 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 jwt = JWTManager(app)
-CORS(app) 
+CORS(app)
 
 user_data_manager = UserDataManager(db)
 channel_data_manager = ChannelDataManager(db)
-channel_user_association_data_manager =  ChannelUserAssociationManager(db)
+channel_user_association_data_manager = ChannelUserAssociationManager(db)
 
 SWAGGER_URL = "/api/docs"
 API_URL = "/static/blogcms.json"
@@ -28,10 +28,12 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
+
 @app.route("/api/get_user_by_id/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = user_data_manager.get_user_by_id(user_id)
-    try:  
+    
+    try:
         if user:
             return jsonify({
                 "user_id": user.id,
@@ -44,8 +46,8 @@ def get_user_by_id(user_id):
     except Exception as e:
         print(f"Error getting user data by id: {e}")
         return jsonify({"error": "Failed to get user data by id"}), 500
-    
-    
+
+
 @app.route("/api/get_user_by_email/<user_email>", methods=["GET"])
 def get_user_by_email(user_email):
     user = user_data_manager.get_user_by_email(user_email)
@@ -63,16 +65,17 @@ def get_user_by_email(user_email):
         print(f"Error getting user data by email: {e}")
         return jsonify({"error": "Failed to get user data by email"}), 500
 
-    
+
 @app.route("/api/all_users", methods=["GET"])
 def get_all_user():
     users = user_data_manager.get_all_users()
-    try: 
+    
+    try:
         if users:
             user_list = []
             for user in users:
                 user_data = {
-                    "user_id" : user.id,
+                    "user_id": user.id,
                     "user_name": user.user_name,
                     "user_email": user.user_email,
                     "user_profile_picture_url": user.user_profile_picture_url
@@ -84,23 +87,24 @@ def get_all_user():
     except Exception as e:
         print(f"Error getting all user data: {e}")
         return jsonify({"error": "Failed to get all user data"}), 500
-        
-    
+
+
 @app.route("/api/register_user", methods=["POST"])
 def register_user():
     data = request.get_json()
     user_email = data.get('user_email')
     user_name = data.get('user_name')
     user_password = data.get('user_password')
-    
+
     try:
-        new_user = user_data_manager.create_user(user_email, user_name, user_password)
+        new_user = user_data_manager.create_user(
+            user_email, user_name, user_password)
         print(f"Result if user: {new_user}")
         return jsonify({"message": "User registered successfully"}), 201
     except Exception as e:
         print(f"Error creating user: {e}")
         return jsonify({"error": "Failed to create user"}), 500
-    
+
 
 @app.route("/api/sign_in_user", methods=["POST"])
 def sign_in_user():
@@ -109,15 +113,17 @@ def sign_in_user():
     user_password = data.get("user_password")
     user_profile_picture_url = data.get("user_profile_picture_url")
     user = user_data_manager.get_user_by_email(user_email)
-    
+
     try:
         if user and user_data_manager.check_user_password(user_password, user.user_password):
-            user_data_manager.update_user_profile_picture(user.id, user_profile_picture_url)
-            access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
+            user_data_manager.update_user_profile_picture(
+                user.id, user_profile_picture_url)
+            access_token = create_access_token(
+                identity=user.id, expires_delta=timedelta(hours=1))
             return jsonify({
-                "message" : "Sign-in successfully",
-                "user_id" : user.id,
-                "user_name" : user.user_name,
+                "message": "Sign-in successfully",
+                "user_id": user.id,
+                "user_name": user.user_name,
                 "user_profile_picture_url": user.user_profile_picture_url,
                 "access_token": access_token
             }), 201
@@ -126,8 +132,8 @@ def sign_in_user():
     except Exception as e:
         print(f"Error creating user: {e}")
         return jsonify({"error": "Failed to login user"}), 500
-    
-    
+
+
 @app.route("/api/create_channel", methods=["POST"])
 @jwt_required()
 def create_channel():
@@ -135,28 +141,29 @@ def create_channel():
     channel_name = data.get("channel_name")
     channel_description = data.get("channel_description")
     channel_color = data.get("channel_color")
-    
+
     user_id = get_jwt_identity()
-    
+
     try:
-        new_channel = channel_data_manager.create_channel(channel_name, channel_description, channel_color, user_id)
-        
+        new_channel = channel_data_manager.create_channel(
+            channel_name, channel_description, channel_color, user_id)
+
         if new_channel:
             return jsonify({
                 "message": "Channel created successfully",
-                "channel_id": new_channel.id 
+                "channel_id": new_channel.id
             }), 201
         else:
             return jsonify({"error": "Failed to create channel"}), 500
     except Exception as e:
         print(f"Error creating channel: {e}")
         return jsonify({"error": "Failed to create channel"}), 500
-    
+
 
 @app.route("/api/get_channel_by_id/<int:channel_id>", methods=["GET"])
 def get_channel_by_id(channel_id):
     channel = channel_data_manager.get_channel_by_id(channel_id)
-    
+
     try:
         if channel:
             return jsonify({
@@ -170,12 +177,12 @@ def get_channel_by_id(channel_id):
     except Exception as e:
         print(f"Error getting channel data by id: {e}")
         return jsonify({"error": "Failed to get channel data by id"}), 500
-    
-    
+
+
 @app.route("/api/all_channels", methods=["GET"])
 def get_all_channels():
     channels = channel_data_manager.get_all_channels()
-    
+
     try:
         if channels:
             channel_list = []
@@ -184,7 +191,7 @@ def get_all_channels():
                     "channel_id": channel.id,
                     "channel_name": channel.channel_name,
                     "channel_description": channel.channel_description,
-                    "channnel_color": channel.channel_color
+                    "channel_color": channel.channel_color
                 }
                 channel_list.append(channel_data)
             return jsonify(channel_list), 200
@@ -193,12 +200,30 @@ def get_all_channels():
     except Exception as e:
         print(f"Error getting channel data: {e}")
         return jsonify({"error": "Failed to get channel data"}), 500
-    
-    
+
+
+@app.route("/api/create_user_association_to_channel", methods=["POST"])
+def create_user_association_to_channel():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    channel_id = data.get("channel_id")
+
+    try:
+        new_user_association_to_channel = channel_user_association_data_manager.create_channel_user_association(
+            user_id, channel_id)
+        if new_user_association_to_channel:
+            return jsonify({
+                "message": "Channel user association created successfully",
+            }), 201
+    except Exception as e:
+        print(f"Error creating user association to channel: {e}")
+        return jsonify({"error": "Failed to create channel user association"}), 500
+
+
 @app.route("/api/channel_associated_user/<int:user_id>", methods=["GET"])
 def get_channel_associated_user(user_id):
     channels_for_user = channel_user_association_data_manager.get_channel_associated_user(user_id)
-    
+
     try:
         if channels_for_user:
             return jsonify(channels_for_user), 200
@@ -209,22 +234,20 @@ def get_channel_associated_user(user_id):
         return jsonify({"error": "Failed to get channel data"}), 500
     
     
-@app.route("/api/create_user_association_to_channel", methods=["POST"])
-def create_user_association_to_channel():
-    data = request.get_json()
-    user_id = data.get("user_id")    
-    channel_id = data.get("channel_id")
-    
+@app.route("/api/user_associated_channel/<int:channel_id>", methods=["GET"])
+def user_associated_channel(channel_id):
+    users_for_channel = channel_user_association_data_manager.get_user_associated_channel(channel_id)
+
     try:
-        new_user_association_to_channel = channel_user_association_data_manager.create_channel_user_association(user_id, channel_id)
-        if new_user_association_to_channel:
-             return jsonify({
-                "message": "Channel user association created successfully",
-            }), 201
+        if users_for_channel:
+            return jsonify(users_for_channel), 200
+        else:
+            return jsonify({"error": "No users found for this channel"}), 404
     except Exception as e:
-        print(f"Error creating user association to channel: {e}")
-        return jsonify({"error": "Failed to create channel user association"}), 500
-         
+        print(f"Error getting user data: {e}")
+        return jsonify({"error": "Failed to get users data"}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
 

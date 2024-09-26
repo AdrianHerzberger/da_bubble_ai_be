@@ -21,13 +21,21 @@ class ChannelUserAssociationManager(ChannelUserAssociationInterface):
             self.db.session.rollback()
             return False
 
-    def get_all_users_in_channel(self, channel_id):
-        channel = ChannelUserAssociation.query(
-            Channel).filter_by(id=channel_id).first()
-
-        users_in_channel = channel.users
-        for user in users_in_channel:
-            print(user.user_name, user.user_email)
+    def get_user_associated_channel(self, channel_id):
+        try:
+            associations = ChannelUserAssociation.query.filter_by(channel_id=channel_id).all()
+            
+            users_for_channel = []
+            for association in associations:
+                user = association.user
+                users_for_channel.append({
+                    "user_id": user.id,
+                    "user_name": user.user_name,
+                })
+            return users_for_channel 
+        except SQLAlchemyError as e:
+            print(f"Error getting user for channel {channel_id}: {e}")
+            return None
 
     def get_channel_associated_user(self, user_id):
         try:
@@ -44,5 +52,5 @@ class ChannelUserAssociationManager(ChannelUserAssociationInterface):
                 })
             return channels_for_user
         except SQLAlchemyError as e:
-            print(f"Error fetching channels for user {user_id}: {e}")
+            print(f"Error getting channels for user {user_id}: {e}")
             return None

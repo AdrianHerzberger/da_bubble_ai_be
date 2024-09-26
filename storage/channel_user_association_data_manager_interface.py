@@ -6,7 +6,7 @@ class ChannelUserAssociationInterface(ABC):
         pass
     
     @abstractclassmethod
-    def get_all_users_in_channel(self, channel_id):
+    def get_user_associated_channel(self, channel_id):
         pass
     
     @abstractclassmethod
