@@ -9,6 +9,14 @@ class ChannelUserAssociationManager(ChannelUserAssociationInterface):
 
     def create_channel_user_association(self, user_id, channel_id):
         try:
+            
+            existing_association = self.db.session.query(ChannelUserAssociation).filter_by(
+                user_id=user_id, channel_id=channel_id).first()
+        
+            if existing_association:
+                print(f"Association between user {user_id} and channel {channel_id} already exists.")
+                return True 
+                
             new_channel_user_association = ChannelUserAssociation(
                 user_id=user_id,
                 channel_id=channel_id

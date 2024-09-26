@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 jwt = JWTManager(app)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}})
 
 user_data_manager = UserDataManager(db)
 channel_data_manager = ChannelDataManager(db)
@@ -205,19 +205,31 @@ def get_all_channels():
 @app.route("/api/create_user_association_to_channel", methods=["POST"])
 def create_user_association_to_channel():
     data = request.get_json()
-    user_id = data.get("user_id")
+    user_ids = data.get("user_id")
     channel_id = data.get("channel_id")
 
+    if not isinstance(user_ids, list):
+       
+        return jsonify({"error": "user_id must be a list"}), 400
+
     try:
-        new_user_association_to_channel = channel_user_association_data_manager.create_channel_user_association(
-            user_id, channel_id)
-        if new_user_association_to_channel:
-            return jsonify({
-                "message": "Channel user association created successfully",
-            }), 201
+        for user_id in user_ids:
+            print(f"The user ID´s passed from the frontend {user_id}")
+            new_user_association = channel_user_association_data_manager.create_channel_user_association(
+                user_id, channel_id
+            )
+            if not new_user_association:
+                return jsonify({"error": f"Failed to associate user {user_id} with channel {channel_id}"}), 500
+
+        return jsonify({
+            "message": "Channel user associations created successfully",
+            "user_ids": user_ids,
+            "channel_id": channel_id
+        }), 201
+
     except Exception as e:
         print(f"Error creating user association to channel: {e}")
-        return jsonify({"error": "Failed to create channel user association"}), 500
+        return jsonify({"error": "Failed to create channel user associations"}), 500
 
 
 @app.route("/api/channel_associated_user/<int:user_id>", methods=["GET"])

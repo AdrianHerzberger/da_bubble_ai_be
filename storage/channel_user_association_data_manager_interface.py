@@ -2,7 +2,7 @@ from abc import ABC, abstractclassmethod
 
 class ChannelUserAssociationInterface(ABC):
     @abstractclassmethod
-    def create_channel_user_association(self, channel_id, user_id):
+    def create_channel_user_association(self, user_ids, channel_id):
         pass
     
     @abstractclassmethod
