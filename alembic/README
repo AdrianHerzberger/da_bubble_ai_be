@@ -2,7 +2,10 @@
 - alembic current
 
 # Create the New Revision
-- alembic revision --autogenerate -m "create channels and users tables"
+- alembic revision -m "create channels and users tables"
+
+# The alembic revision --autogenerate command simplifies migration creation by comparing your current models with the database schema
+- alembic revision --autogenerate
 
 # Upgrade the Database to the Latest Migration
 - alembic upgrade head

@@ -8,16 +8,19 @@ from storage.db_instance import db
 from storage.user_data_manager import UserDataManager
 from storage.channel_data_manager import ChannelDataManager
 from storage.channel_user_association_data_manager import ChannelUserAssociationManager
+from storage.channel_message_manager import ChannelMessageManager
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 jwt = JWTManager(app)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}})
+CORS(app)
 
 user_data_manager = UserDataManager(db)
 channel_data_manager = ChannelDataManager(db)
 channel_user_association_data_manager = ChannelUserAssociationManager(db)
+channel_message_manager = ChannelMessageManager(db)
 
 SWAGGER_URL = "/api/docs"
 API_URL = "/static/blogcms.json"
@@ -32,7 +35,7 @@ app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 @app.route("/api/get_user_by_id/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = user_data_manager.get_user_by_id(user_id)
-    
+
     try:
         if user:
             return jsonify({
@@ -69,7 +72,7 @@ def get_user_by_email(user_email):
 @app.route("/api/all_users", methods=["GET"])
 def get_all_user():
     users = user_data_manager.get_all_users()
-    
+
     try:
         if users:
             user_list = []
@@ -234,7 +237,8 @@ def create_user_association_to_channel():
 
 @app.route("/api/channel_associated_user/<int:user_id>", methods=["GET"])
 def get_channel_associated_user(user_id):
-    channels_for_user = channel_user_association_data_manager.get_channel_associated_user(user_id)
+    channels_for_user = channel_user_association_data_manager.get_channel_associated_user(
+        user_id)
 
     try:
         if channels_for_user:
@@ -244,11 +248,12 @@ def get_channel_associated_user(user_id):
     except Exception as e:
         print(f"Error getting channel data: {e}")
         return jsonify({"error": "Failed to get channel data"}), 500
-    
-    
+
+
 @app.route("/api/user_associated_channel/<int:channel_id>", methods=["GET"])
 def user_associated_channel(channel_id):
-    users_for_channel = channel_user_association_data_manager.get_user_associated_channel(channel_id)
+    users_for_channel = channel_user_association_data_manager.get_user_associated_channel(
+        channel_id)
 
     try:
         if users_for_channel:
@@ -258,6 +263,33 @@ def user_associated_channel(channel_id):
     except Exception as e:
         print(f"Error getting user data: {e}")
         return jsonify({"error": "Failed to get users data"}), 500
+
+
+@app.route("/api/create_message_channel", methods=["POST"])
+def create_message_channel():
+    data = request.get_json()
+    channel_id = data.get("channel_id")
+    sender_id = data.get("sender_id")
+    content = data.get("content")
+    timestamp_str  = data.get("timestamp")
+
+    try:
+        if isinstance(timestamp_str, str):
+            timestamp = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+            print(timestamp)
+        else:
+            return jsonify({"error": "Invalid timestamp format"}), 400
+
+        new_message = channel_message_manager.create_message(channel_id, sender_id, content, timestamp)
+
+        if new_message:
+            return jsonify({"message": "Message created successfully"}), 201
+        else:
+            return jsonify({"error": "Failed to create message"}), 500
+
+    except Exception as e:
+        print(f"Error creating message for channel: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 if __name__ == "__main__":
