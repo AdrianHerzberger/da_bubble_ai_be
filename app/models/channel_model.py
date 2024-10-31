@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
-from storage.db_instance import db 
+from ..instances.db_instance import db 
 from .channel_user_association_model import ChannelUserAssociation
 from .channel_message_model import ChannelMessage
 

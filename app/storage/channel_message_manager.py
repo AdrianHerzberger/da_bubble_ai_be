@@ -1,4 +1,5 @@
-from models.channel_model import db, ChannelMessage
+from ..instances.db_instance import db 
+from ..models.channel_message_model import ChannelMessage
 from .channel_message_manager_interface import ChannelMessageManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 

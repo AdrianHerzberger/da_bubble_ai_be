@@ -1,4 +1,5 @@
-from models.channel_user_association_model import db, ChannelUserAssociation
+from ..instances.db_instance import db 
+from ..models.channel_user_association_model import ChannelUserAssociation
 from .channel_user_association_data_manager_interface import ChannelUserAssociationInterface
 from sqlalchemy.exc import SQLAlchemyError
 

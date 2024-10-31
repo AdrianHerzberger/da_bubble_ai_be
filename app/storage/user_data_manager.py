@@ -1,4 +1,5 @@
-from models.user_model import db, User
+from ..instances.db_instance import db 
+from ..models.user_model import User
 from .user_data_manager_interface import UserDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash, check_password_hash

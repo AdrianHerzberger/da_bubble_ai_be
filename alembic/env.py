@@ -1,3 +1,5 @@
+import sys
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -18,9 +20,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from models.user_model import User
-from models.channel_model import Channel
-from storage.db_instance import db
+from app.instances.db_instance import db
 
 target_metadata = [db.Model.metadata]
 

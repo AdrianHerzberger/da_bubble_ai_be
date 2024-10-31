@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, ForeignKey, Column
 from sqlalchemy.orm import relationship
-from storage.db_instance import db
+from ..instances.db_instance import db 
 
 class ChannelUserAssociation(db.Model):
     __tablename__ = 'channel_user_association'
