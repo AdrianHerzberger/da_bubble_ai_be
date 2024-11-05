@@ -1,5 +1,6 @@
 import uuid 
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+import datetime
 from sqlalchemy.dialects.postgresql import UUID 
 from sqlalchemy.orm import relationship
 from ..instances.db_instance import db 
@@ -14,6 +15,12 @@ class User(db.Model):
     user_name = db.Column(db.String(100), nullable=False) 
     user_password = db.Column(db.String(255), nullable=False) 
     user_profile_picture_url = db.Column(db.String(255), nullable=True)
+    
+    last_login_date = db.Column(DateTime, nullable=True)
+    create_date = db.Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    password_expire_date = db.Column(DateTime, nullable=True)
+    is_locked = db.Column(Boolean, default=False, nullable=False)
+    status = db.Column(String(50), nullable=False, default="active")
     
     channel_associations = relationship('ChannelUserAssociation', back_populates='user')
     channels = relationship('Channel', secondary='channel_user_association', back_populates='users', viewonly=True)

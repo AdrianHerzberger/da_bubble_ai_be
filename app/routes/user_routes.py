@@ -1,29 +1,14 @@
 from flask import Blueprint, jsonify, request
 from ..storage.user_data_manager import UserDataManager
 from ..instances.db_instance import db
-from flask_jwt_extended import create_access_token, set_access_cookies, get_jwt, get_jwt_identity, jwt_required
-
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, set_access_cookies, set_refresh_cookies, jwt_required, get_jwt_identity, unset_jwt_cookies
 from datetime import datetime, timedelta, timezone
 
 user_routes = Blueprint("user_routes", __name__)
 user_data_manager = UserDataManager(db)
 
 
-@user_routes.after_request
-def refresh_expiring_jwts(response):
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            set_access_cookies(response, access_token)
-        return response
-    except (RuntimeError, KeyError):
-        return response
-
-
-@user_routes.route("/get_user_by_id/<int:user_id>", methods=["GET"])
+@user_routes.route("/get_user_by_id/<user_id>", methods=["GET"])
 def get_user_by_id(user_id):
     user = user_data_manager.get_user_by_id(user_id)
 
@@ -105,29 +90,68 @@ def login():
     data = request.get_json()
     user_email = data.get("user_email")
     user_password = data.get("user_password")
-    user_profile_picture_url = data.get("user_profile_picture_url")
     user = user_data_manager.get_user_by_email(user_email)
-
-    response = jsonify({"msg": "login successful"})
 
     try:
         if user and user_data_manager.check_user_password(user_password, user.user_password):
-            user_data_manager.update_user_profile_picture(
-                user.id, user_profile_picture_url)
-            access_token = create_access_token(identity=user.id,  expires_delta=timedelta(hours=1))
-            set_access_cookies(response, access_token)
-            return jsonify({
-                "message": "Sign-in successfully",
+            access_token = create_access_token(
+                identity=user.id, expires_delta=timedelta(minutes=30))
+            
+            refresh_token = create_access_token(
+                identity=user.id, expires_delta=timedelta(minutes=30))
+            
+            response = jsonify({
+                "message": "Login successful",
                 "user_id": user.id,
                 "user_name": user.user_name,
-                "user_profile_picture_url": user.user_profile_picture_url,
-                "access_token": access_token
-            }), 201
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            })
+            set_access_cookies(response, access_token)
+            set_refresh_cookies(response, refresh_token)
+            
+            return response, 201
         else:
             return jsonify({"error": "Invalid email or password"}), 401
     except Exception as e:
-        print(f"Error creating user: {e}")
+        print(f"Error during login: {e}")
         return jsonify({"error": "Failed to login user"}), 500
+
+
+@user_routes.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    try:
+        user_id = get_jwt_identity()
+        new_access_token = create_access_token(
+            identity=user.id, expires_delta=timedelta(minutes=30))
+
+        response = jsonify({
+            "message": "Token refreshed successfully",
+            "access_token": new_access_token
+        })
+
+        set_access_cookies(response, new_access_token)
+        return response, 200
+    except Exception as e:
+        print(f"Error refreshing token: {e}")
+        return jsonify({"error": "Failed to refresh token"}), 500
+
+
+@user_routes.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            set_access_cookies(response, access_token)
+            
+        return response
+    except (RuntimeError, KeyError):
+        return response
 
 
 @user_routes.route("/logout")

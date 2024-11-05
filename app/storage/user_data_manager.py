@@ -3,6 +3,7 @@ from ..models.user_model import User
 from .user_data_manager_interface import UserDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 
 
 class UserDataManager(UserDataManagerInterface):
@@ -11,12 +12,20 @@ class UserDataManager(UserDataManagerInterface):
 
     def create_user(self, user_email, user_name, user_password):
         hashed_password = generate_password_hash(user_password)
+        create_date = datetime.utcnow()
+        password_expire_date = create_date + timedelta(days=90)
+        is_locked = False
+        status = "active"
         
         try:
             new_user = User(
                 user_email=user_email,
                 user_name=user_name,
                 user_password=hashed_password,
+                create_date=create_date,
+                password_expire_date=password_expire_date,
+                is_locked=is_locked,
+                status=status
             )
             self.db.session.add(new_user)
             self.db.session.commit()

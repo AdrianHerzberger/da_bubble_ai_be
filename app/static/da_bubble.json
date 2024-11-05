@@ -6,16 +6,101 @@
   },
   "servers": [{ "url": "http://localhost:5001" }],
   "paths": {
+    "/api/register_user": {
+      "post": {
+        "summary": "Register a new user",
+        "requestBody": {
+          "description": "User registration data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_name": { "type": "string" },
+                  "user_email": { "type": "string", "format": "email" },
+                  "user_password": { "type": "string" }
+                },
+                "required": ["user_name", "user_email", "user_password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "user_name": { "type": "string" },
+                    "user_email": { "type": "string", "format": "email" },
+                    "user_password": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error creating user"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "Login a user",
+        "requestBody": {
+          "description": "User login data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": { "type": "string", "format": "email" },
+                  "user_password": { "type": "string" }
+                },
+                "required": ["user_email", "user_password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Login user successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "user_email": { "type": "string", "format": "email" },
+                    "user_password": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error login user"
+          }
+        }
+      }
+    },
     "/api/get_user_by_id/{user_id}": {
       "get": {
-        "summary": "Get user by ID",
+        "summary": "Get user by UUID",
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -27,7 +112,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user_id": { "type": "integer" },
+                    "user_id": { "type": "string", "format": "uuid" },
                     "user_name": { "type": "string" },
                     "user_email": { "type": "string" },
                     "user_profile_picture_url": { "type": "string" }
@@ -61,7 +146,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user_id": { "type": "integer" },
+                    "user_id": { "type": "string", "format": "uuid" },
                     "user_name": { "type": "string" },
                     "user_email": { "type": "string" },
                     "user_profile_picture_url": { "type": "string" }
@@ -88,7 +173,7 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "user_id": { "type": "integer" },
+                      "user_id": { "type": "string", "format": "uuid" },
                       "user_name": { "type": "string" },
                       "user_email": { "type": "string" },
                       "user_profile_picture_url": { "type": "string" }
@@ -250,96 +335,6 @@
         }
       }
     },
-    "/api/register_user": {
-      "post": {
-        "summary": "Register a new user",
-        "requestBody": {
-          "description": "User registration data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_name": { "type": "string" },
-                  "user_email": { "type": "string", "format": "email" },
-                  "user_password": { "type": "string" }
-                },
-                "required": ["user_name", "user_email", "user_password"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "user_name": { "type": "string" },
-                    "user_email": { "type": "string", "format": "email" },
-                    "user_password": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error creating user"
-          }
-        }
-      }
-    },
-    "/api/sign_in_user": {
-      "post": {
-        "summary": "Login a user",
-        "requestBody": {
-          "description": "User login data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_email": { "type": "string", "format": "email" },
-                  "user_password": { "type": "string" },
-                  "user_profile_picture_url": { "type": "string" }
-                },
-                "required": [
-                  "user_email",
-                  "user_password",
-                  "user_profile_picture_url"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Login user successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "user_email": { "type": "string", "format": "email" },
-                    "user_password": { "type": "string" },
-                    "user_profile_picture_url": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error login user"
-          }
-        }
-      }
-    },
     "/api/create_channel": {
       "post": {
         "summary": "Create a channel",
@@ -455,12 +450,7 @@
                   "content": { "type": "string" },
                   "timestamp": { "type": "string" }
                 },
-                "required": [
-                  "channel_id",
-                  "sender_id",
-                  "content",
-                  "timestamp"
-                ]
+                "required": ["channel_id", "sender_id", "content", "timestamp"]
               }
             }
           }

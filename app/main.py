@@ -18,7 +18,7 @@ db.init_app(app)
 jwt = JWTManager(app)
 
 SWAGGER_URL = "/api/docs"
-API_URL = "/app/static/da_bubble.json"
+API_URL = "/static/da_bubble.json"
 swagger_ui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={"app_name": "DA_Bubble_API"})
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
