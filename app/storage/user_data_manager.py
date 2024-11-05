@@ -67,3 +67,15 @@ class UserDataManager(UserDataManagerInterface):
             print(f"Error updating user profile picture: {e}")
             self.db.session.rollback()
             return False
+        
+    def update_user_last_login_date(self, user_id, last_login_date):
+        try:
+            user_id_query = User.query.filter_by(id=user_id).first()
+            if user_id_query:
+                user_id_query.last_login_date = last_login_date
+                self.db.session.commit()
+                return True
+        except Exception as e:
+            print(f"Error updating users last login date: {e}")
+            self.db.session.rollback()
+            return False
