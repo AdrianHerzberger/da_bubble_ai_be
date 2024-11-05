@@ -1,4 +1,6 @@
+import uuid
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID 
 from sqlalchemy.orm import relationship
 from ..instances.db_instance import db 
 from .channel_user_association_model import ChannelUserAssociation
@@ -7,7 +9,7 @@ from .channel_message_model import ChannelMessage
 class Channel(db.Model):
     __tablename__ = 'channels'
     
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     channel_name = db.Column(db.String(50), nullable=False)
     channel_description = db.Column(db.String(100), nullable=False)
     channel_color = db.Column(db.String(50), nullable=True)

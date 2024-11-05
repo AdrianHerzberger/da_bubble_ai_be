@@ -20,10 +20,14 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+from app.models.user_model import User
+from app.models.channel_model import Channel
+from app.models.channel_user_association_model import ChannelUserAssociation
+from app.models.channel_message_model import ChannelMessage
 from app.instances.db_instance import db
 
-target_metadata = [db.Model.metadata]
-
+target_metadata = db.Model.metadata
+# print(db.Model.metadata.tables)
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
