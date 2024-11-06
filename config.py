@@ -8,5 +8,5 @@ class Config:
     data_base_url = os.getenv("data_base_url")
     
     JWT_SECRET_KEY = f'{super_secret}'
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', f'{data_base_url}')
+    SQLALCHEMY_DATABASE_URL = os.getenv('DATABASE_URL', f'{data_base_url}')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -25,9 +25,9 @@ from app.models.channel_model import Channel
 from app.models.channel_user_association_model import ChannelUserAssociation
 from app.models.channel_message_model import ChannelMessage
 from app.instances.db_instance import db
+from app.session_management.create_async_engine import Base
 
-target_metadata = db.Model.metadata
-# print(db.Model.metadata.tables)
+target_metadata = Base.metadata
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")

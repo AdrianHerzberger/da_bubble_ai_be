@@ -1,17 +1,18 @@
+import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.user_data_manager import UserDataManager
-from ..instances.db_instance import db
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
-                                get_jwt, set_access_cookies, set_refresh_cookies, jwt_required, get_jwt_identity, unset_jwt_cookies)
+                                get_jwt, set_access_cookies, set_refresh_cookies, 
+                                jwt_required, get_jwt_identity, unset_jwt_cookies)
 from datetime import datetime, timedelta, timezone
 
 user_routes = Blueprint("user_routes", __name__)
-user_data_manager = UserDataManager(db)
+user_data_manager = UserDataManager()
 
 
 @user_routes.route("/get_user_by_id/<user_id>", methods=["GET"])
-def get_user_by_id(user_id):
-    user = user_data_manager.get_user_by_id(user_id)
+async def get_user_by_id(user_id):
+    user = await user_data_manager.get_user_by_id(user_id)
 
     try:
         if user:
@@ -29,8 +30,8 @@ def get_user_by_id(user_id):
 
 
 @user_routes.route("/get_user_by_email/<user_email>", methods=["GET"])
-def get_user_by_email(user_email):
-    user = user_data_manager.get_user_by_email(user_email)
+async def get_user_by_email(user_email):
+    user = await user_data_manager.get_user_by_email(user_email)
     try:
         if user:
             return jsonify({
@@ -46,11 +47,11 @@ def get_user_by_email(user_email):
         return jsonify({"error": "Failed to get user data by email"}), 500
 
 
-@user_routes.route("/all_users", methods=["GET"])
-def get_all_user():
-    users = user_data_manager.get_all_users()
-
+@user_routes.route("/get_all_users", methods=["GET"])
+async def get_all_user():
     try:
+        users = await user_data_manager.get_all_users()
+                
         if users:
             user_list = []
             for user in users:
@@ -79,7 +80,6 @@ def register_user():
     try:
         new_user = user_data_manager.create_user(
             user_email, user_name, user_password)
-        print(f"Result if user: {new_user}")
         return jsonify({"message": "User registered successfully"}), 201
     except Exception as e:
         print(f"Error creating user: {e}")
@@ -87,11 +87,11 @@ def register_user():
 
 
 @user_routes.route("/login", methods=["POST"])
-def login():
+async def login():
     data = request.get_json()
     user_email = data.get("user_email")
     user_password = data.get("user_password")
-    user = user_data_manager.get_user_by_email(user_email)
+    user = await user_data_manager.get_user_by_email(user_email)
     
     last_login_date = datetime.today().strftime('%Y-%m-%d')
     user_id = user.id
@@ -104,7 +104,7 @@ def login():
             refresh_token = create_access_token(
                 identity=user.id, expires_delta=timedelta(minutes=30))
             
-            user_data_manager.update_user_last_login_date(user_id, last_login_date)
+            await user_data_manager.update_user_last_login_date(user_id, last_login_date)
             
             response = jsonify({
                 "message": "Login successful",
