@@ -1,24 +1,23 @@
+import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.channel_data_manager import ChannelDataManager
-from ..instances.db_instance import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 channel_routes = Blueprint("channel_routes", __name__)
-channel_data_manager = ChannelDataManager(db)
+channel_data_manager = ChannelDataManager()
 
 @channel_routes.route("/create_channel", methods=["POST"])
 @jwt_required()
-def create_channel():
+async def create_channel():
     data = request.get_json()
     channel_name = data.get("channel_name")
     channel_description = data.get("channel_description")
-    channel_color = data.get("channel_color")
 
     user_id = get_jwt_identity()
 
     try:
-        new_channel = channel_data_manager.create_channel(
-            channel_name, channel_description, channel_color, user_id)
+        new_channel = await channel_data_manager.create_channel(
+            channel_name, channel_description, user_id)
 
         if new_channel:
             return jsonify({
@@ -32,9 +31,9 @@ def create_channel():
         return jsonify({"error": "Failed to create channel"}), 500
 
 
-@channel_routes.route("/get_channel_by_id/<int:channel_id>", methods=["GET"])
-def get_channel_by_id(channel_id):
-    channel = channel_data_manager.get_channel_by_id(channel_id)
+@channel_routes.route("/get_channel_by_id/<channel_id>", methods=["GET"])
+async def get_channel_by_id(channel_id):
+    channel = await channel_data_manager.get_channel_by_id(channel_id)
 
     try:
         if channel:
@@ -51,9 +50,9 @@ def get_channel_by_id(channel_id):
         return jsonify({"error": "Failed to get channel data by id"}), 500
 
 
-@channel_routes.route("/all_channels", methods=["GET"])
-def get_all_channels():
-    channels = channel_data_manager.get_all_channels()
+@channel_routes.route("/get_all_channels", methods=["GET"])
+async def get_all_channels():
+    channels = await channel_data_manager.get_all_channels()
 
     try:
         if channels:
