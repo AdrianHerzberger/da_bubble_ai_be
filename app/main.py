@@ -1,5 +1,6 @@
 import asyncio
 from flask import Flask
+from asgiref.wsgi import WsgiToAsgi
 from flask_jwt_extended import JWTManager
 from flask_swagger_ui import get_swaggerui_blueprint
 from .routes.user_routes import user_routes
@@ -8,9 +9,11 @@ from .routes.channel_user_association_routes import channel_user_association_rou
 from .routes.channel_message_routes import channel_message_routes
 from .session_management.create_async_engine import AsyncSessionLocal, async_engine, Base
 from config import Config
+import platform
 
 app = Flask(__name__)
 app.config.from_object(Config)
+asgi_app = WsgiToAsgi(app)
 
 # Initialize jwt Manager in the app
 jwt = JWTManager(app)
@@ -28,23 +31,26 @@ app.register_blueprint(channel_routes, url_prefix="/api")
 app.register_blueprint(channel_user_association_routes, url_prefix="/api")
 app.register_blueprint(channel_message_routes, url_prefix="/api")
 
-# Initialize the database tables asynchronously at startup 
-async def init_db():
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+# if platform.system() == "Windows":
+#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Set up the app and initialize async resources before running
-def setup_app():
-    try:
-        asyncio.run(init_db())
-    except RuntimeError as e:
-        print(f"RuntimeError during async setup: {e}")
-        raise
+# # Initialize the database tables asynchronously at startup 
+# async def init_db():
+#     async with async_engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)
 
-setup_app()
+# # Set up the app and initialize async resources before running
+# def setup_app():
+#     try:
+#         asyncio.run(init_db())
+#     except RuntimeError as e:
+#         print(f"RuntimeError during async setup: {e}")
+#         raise
+
+# setup_app()
 
 # Close the async session after each request
-@app.teardown_appcontext
-async def shutdown_session(exception=None):
-    async_session = AsyncSessionLocal()
-    await async_session.close()
+# @app.teardown_appcontext
+# async def shutdown_session(exception=None):
+#     async_session = AsyncSessionLocal()
+#     await async_session.close()

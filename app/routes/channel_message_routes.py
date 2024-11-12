@@ -1,3 +1,4 @@
+import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.channel_message_manager import ChannelMessageManager
 from ..services.summarization import extract_keywords
@@ -34,7 +35,7 @@ async def create_message_channel():
 async def get_all_channel_messages():
     channel_message = await channel_message_manager.get_all_messages()
     
-    keywords = await extract_keywords()
+    keywords = asyncio.create_task(extract_keywords())
 
     try:
         if channel_message:

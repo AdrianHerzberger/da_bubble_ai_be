@@ -9,9 +9,10 @@ DATABASE_URL = Config.SQLALCHEMY_DATABASE_URL
 async_engine = create_async_engine(
     DATABASE_URL,
     echo=True,
-    pool_size=2,         
+    pool_size=5,         
     max_overflow=10,        
-    pool_timeout=2,
+    pool_timeout=10,
+    pool_recycle=1800,
     pool_pre_ping=True        
 )
 
@@ -23,10 +24,10 @@ AsyncSessionLocal = sessionmaker(
     expire_on_commit=False
 )
 
-@asynccontextmanager
-async def get_session():
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+# @asynccontextmanager
+# async def get_session():
+#     async with AsyncSessionLocal() as session:
+#         try:
+#             yield session
+#         finally:
+#             await session.close()
