@@ -59,7 +59,7 @@ async def get_channel_messages(channel_id):
 async def get_all_channel_messages():
     channel_message = await channel_message_manager.get_all_messages()
     
-    keywords = asyncio.create_task(extract_keywords())
+    #keywords = asyncio.create_task(extract_keywords())
 
     try:
         if channel_message:
