@@ -50,13 +50,21 @@ class UserDataManager(UserDataManagerInterface):
 
     async def get_user_by_id(self, user_id):
         async with self.db_session_factory() as session:
-            user_id_query = await session.execute(select(User).filter_by(id=user_id))
-            return user_id_query.scalar_one_or_none()
+            try:
+                user_id_query = await session.execute(select(User).filter_by(id=user_id))
+                return user_id_query.scalar_one_or_none()
+            except Exception as e:
+                print(f"Error fetching user by id: {e}")
+                return None
 
     async def get_user_by_email(self, user_email):
         async with self.db_session_factory() as session:
-            user_email_query = await session.execute(select(User).filter_by(user_email=user_email))
-            return user_email_query.scalar_one_or_none()
+            try:   
+                user_email_query = await session.execute(select(User).filter_by(user_email=user_email))
+                return user_email_query.scalar_one_or_none()
+            except Exception as e:
+                print(f"Error fetching user by email: {e}")
+                return None
 
     def check_user_password(self, user_password, stored_hashed_password):
         return check_password_hash(stored_hashed_password, user_password)
@@ -64,13 +72,13 @@ class UserDataManager(UserDataManagerInterface):
     async def update_user_profile_picture(self, user_id, user_profile_picture_url):
         async with self.db_session_factory() as session:
             try:
-                user_id_query = await session.execute(select(User).filter_by(id=user_id))
+                user_id_query = await session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
                 if user_id_query:
                     user_id_query.user_profile_picture_url = user_profile_picture_url
-                    session.commit()
+                    await session.commit()
             except Exception as e:
                 print(f"Error updating user profile picture: {e}")
-                session.rollback()
+                await session.rollback()
                 return None
 
     async def update_user_last_login_date(self, user_id, last_login_date):
@@ -84,5 +92,5 @@ class UserDataManager(UserDataManagerInterface):
                     return True
             except Exception as e:
                 print(f"Error updating users last login date: {e}")
-                session.rollback()
+                await session.rollback()
                 return None
