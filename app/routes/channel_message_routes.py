@@ -29,9 +29,33 @@ async def create_message_channel():
     except Exception as e:
         print(f"Error creating message for channel: {e}")
         return jsonify({"error": "Server error"}), 500
+    
+    
+@channel_message_routes.route("/get_channel_messages/<channel_id>", methods=["GET"])
+async def get_channel_messages(channel_id):
+    channel_message = await channel_message_manager.get_channel_messages_by_id(channel_id)
+    
+    try: 
+        if channel_message:
+            channel_message_list = []
+            for message in channel_message:
+                channel_message_data = {
+                    "message_id": message.id,
+                    "channel_id": message.channel_id,
+                    "sender_id": message.sender_id,
+                    "content": message.content,
+                    "message_time": message.timestamp
+                }
+                channel_message_list.append(channel_message_data)
+            return jsonify(channel_message_list), 200
+        else:
+            return jsonify({"error": "Channel message data not found"}), 404
+    except Exception as e:
+        print(f"Error getting channel message data: {e}")
+        return jsonify({"error": "Failed to get channel message data"}), 500        
 
 
-@channel_message_routes.route("/get_all_channel_messages", methods=["GET"])
+@channel_message_routes.route("/get_all_channel_messages/", methods=["GET"])
 async def get_all_channel_messages():
     channel_message = await channel_message_manager.get_all_messages()
     
@@ -49,7 +73,7 @@ async def get_all_channel_messages():
                     "message_time": message.timestamp
                 }
                 channel_message_list.append(channel_message_data)
-            return jsonify(channel_message_data), 200
+            return jsonify(channel_message_list), 200
         else:
             return jsonify({"error": "Channel message data not found"}), 404
     except Exception as e:

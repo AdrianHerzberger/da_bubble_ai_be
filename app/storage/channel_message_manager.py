@@ -30,6 +30,11 @@ class ChannelMessageManager(ChannelMessageManagerInterface):
                 session.rollback()
                 return None
             
+    async def get_channel_messages_by_id(self, channel_id):
+        async with self.db_session_factory() as session:
+            channel_message_id_query = await session.execute(select(ChannelMessage).filter_by(channel_id=channel_id))
+            return channel_message_id_query.scalars().all()
+            
     async def get_all_messages(self):       
         async with self.db_session_factory() as session:
             try:

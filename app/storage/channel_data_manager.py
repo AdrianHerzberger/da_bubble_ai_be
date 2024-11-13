@@ -32,8 +32,8 @@ class ChannelDataManager(ChannelDataManagerInterface):
 
     async def get_channel_by_id(self, channel_id):
         async with self.db_session_factory() as session:
-            channel_id_query = await session.execute((Channel).filter_by(id=channel_id))
-            return channel_id_query
+            channel_id_query = await session.execute(select(Channel).filter_by(id=channel_id))
+            return channel_id_query.scalar_one_or_none()
         
     async def get_all_channels(self):
         async with self.db_session_factory() as session:
