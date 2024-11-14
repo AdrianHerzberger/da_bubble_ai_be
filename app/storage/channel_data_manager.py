@@ -4,6 +4,7 @@ from ..models.channel_model import Channel
 from .channel_data_manager_interface import ChannelDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
+import datetime
 import random
 
 class ChannelDataManager(ChannelDataManagerInterface):
@@ -12,6 +13,7 @@ class ChannelDataManager(ChannelDataManagerInterface):
 
     async def create_channel(self, channel_name, channel_description, user_id):
         channel_color = "%06x" % random.randint(0, 0xFFFFFF)
+        create_date = datetime.datetime.utcnow()
         
         async with self.db_session_factory() as session:
             try:
@@ -19,6 +21,7 @@ class ChannelDataManager(ChannelDataManagerInterface):
                     channel_name=channel_name,
                     channel_description=channel_description,
                     channel_color=channel_color,
+                    create_date=create_date,
                     user_id=user_id
                 )
                 session.add(new_channel)

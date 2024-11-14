@@ -1,8 +1,9 @@
 import uuid
-from sqlalchemy import BigInteger, Column, Integer, String, Date, ForeignKey
+from sqlalchemy import BigInteger, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID 
 from sqlalchemy.orm import relationship
-from ..session_management.create_async_engine import Base 
+from ..session_management.create_async_engine import Base
+import datetime 
 
 class Channel(Base):
     __tablename__ = 'channels'
@@ -11,6 +12,7 @@ class Channel(Base):
     channel_name = Column(String(50), nullable=False)
     channel_description = Column(String(100), nullable=False)
     channel_color = Column(String(50), nullable=True)
+    create_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     
     user_associations = relationship('ChannelUserAssociation', back_populates='channel')
