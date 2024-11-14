@@ -1,7 +1,7 @@
 import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.channel_message_manager import ChannelMessageManager
-from ..services.summarization import extract_keywords
+from ..services.summarization import MessageThreadSuggestion
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageManager()
@@ -59,8 +59,11 @@ async def get_channel_messages(channel_id):
 async def get_all_channel_messages():
     channel_message = await channel_message_manager.get_all_messages()
     
-    #keywords = asyncio.create_task(extract_keywords())
-
+    contextual_insights = MessageThreadSuggestion()
+    
+    keywords = await contextual_insights.extract_keywords()
+    print(f"keywords to extract : {keywords}")
+    
     try:
         if channel_message:
             channel_message_list = []

@@ -4,37 +4,65 @@ from sklearn.decomposition import NMF
 from ..storage.channel_message_manager import ChannelMessageManager
 from ..utilites.tokenizer import Tokenizer
 import numpy as np
+import re
 
-async def extract_keywords(n_keywords=5):
-    channel_messages_manager = ChannelMessageManager()
-    messages = await channel_messages_manager.get_all_messages()
-    
-    tokenizer_instance = Tokenizer()
-    
-    if messages is None or len(messages) == 0:
-        print("No messages found.")
-        return []
-    
-    content_list = []
-    for msg in messages:
-        content_list.append(msg.content)
+class MessageThreadSuggestion():
+    def __init__(self):
+        self.tokenizer_instance = Tokenizer()
+        self.message_mention_terms = ["feature", "bug", "crash", "error", "load"]
+        self.channel_messages_manager = ChannelMessageManager()
+
+    async def extract_keywords(self):
+        messages = await self.channel_messages_manager.get_all_messages()
+
+        if messages is None or len(messages) == 0:
+            print("No messages found.")
+            return []
         
-    joined_text = " ".join(content_list)
+        content_list = []
+        for msg in messages:
+            content_list.append(msg.content)
+            
         
-    vectorizer = TfidfVectorizer(
-        ngram_range=(1,1), 
-        stop_words='english', 
-        max_features=1000
-    )
-    tfidf_matrix = vectorizer.fit_transform([joined_text])
+        keyword_list = []
+        for msg in content_list:
+            for term in self.message_mention_terms:
+                if term in msg:
+                    keyword_list.append(f"# {term.capitalize()}")
+                    
+            feature_matches = re.findall(r"feature\s+#\s?(\w+)", msg, re.IGNORECASE)
+            for  feature in feature_matches:
+                keyword_list.append(f"Feature #{feature.capitalize()}")
+
+        keyword_list = list(set(keyword_list))
+        topic_keywords = self.process_topic_modeling(content_list)
+        
+        return list(set(keyword_list + topic_keywords))
     
-    nmf = NMF(n_components=1, random_state=1)
-    nmf.fit(tfidf_matrix)
     
-    keywords = np.array(vectorizer.get_feature_names_out())[
-        np.argsort(-nmf.components_[0])[:n_keywords]
-    ]
-    
-    return keywords
+    def process_topic_modeling(self, content_list):
+        vectorizer = TfidfVectorizer(
+            ngram_range=(1, 2),
+            stop_words='english',
+            max_features=1000
+        )
+
+        tfidf_matrix = vectorizer.fit_transform(content_list)
+        nmf = NMF(n_components=1, random_state=1)
+        nmf.fit(tfidf_matrix)
+        
+        return self.reflect_keywords(vectorizer, nmf)
+        
+                 
+    def reflect_keywords(self, vectorizer, nmf, n_keywords=5):
+        keywords = []
+        
+        feature_names = vectorizer.get_feature_names_out()
+        for topic_idx, topic in enumerate(nmf.components_):
+            for i in topic.argsort()[:-n_keywords - 1:-1]:
+                topic_keywords = feature_names[i]
+                keywords.extend(topic_keywords)   
+        
+        return list(set(keywords))
     
     
