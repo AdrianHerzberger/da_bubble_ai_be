@@ -35,8 +35,7 @@ async def create_message_channel(channel_id):
 async def get_channel_messages(channel_id):
     try: 
         channel_message = await channel_message_manager.get_channel_messages_by_id(channel_id)
-    
-        if request.method == "GET":       
+        if channel_message:       
             contextual_insights = MessageThreadSuggestion()
             keywords = contextual_insights.extract_keywords(channel_message)
             
@@ -69,8 +68,8 @@ async def get_channel_messages(channel_id):
 
 @channel_message_routes.route("/get_all_messages/", methods=["GET"])
 async def get_all_messages():
-    channel_message = await channel_message_manager.get_all_messages()
     try:
+        channel_message = await channel_message_manager.get_all_messages()
         if channel_message:
             channel_message_list = []
             for message in channel_message:

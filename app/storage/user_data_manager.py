@@ -1,7 +1,7 @@
 import asyncio
 from ..session_management.create_async_engine import AsyncSessionLocal, Base
 from ..models.user_model import User
-from .user_data_manager_interface import UserDataManagerInterface
+from ..repository_manager.user_data_manager_interface import UserDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -88,7 +88,7 @@ class UserDataManager(UserDataManagerInterface):
                 user = user_id_query.scalar_one_or_none()
                 if user:
                     user.last_login_date = last_login_date
-                    session.commit()
+                    await session.commit()
                     return True
             except Exception as e:
                 print(f"Error updating users last login date: {e}")

@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from ..storage.channel_user_association_data_manager import ChannelUserAssociationManager
-from ..instances.db_instance import db
 
 channel_user_association_routes = Blueprint(
     "channel_user_association_routes", __name__)

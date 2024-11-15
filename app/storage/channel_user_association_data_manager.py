@@ -1,7 +1,7 @@
 import asyncio
 from ..session_management.create_async_engine import AsyncSessionLocal
 from ..models.channel_user_association_model import ChannelUserAssociation
-from .channel_user_association_data_manager_interface import ChannelUserAssociationInterface
+from ..repository_manager.channel_user_association_data_manager_interface import ChannelUserAssociationInterface
 from ..models.user_model import User
 from ..models.channel_model import Channel
 from sqlalchemy.exc import SQLAlchemyError

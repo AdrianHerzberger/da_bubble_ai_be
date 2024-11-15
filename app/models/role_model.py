@@ -14,7 +14,7 @@ class Role(Base):
     description = Column(Text, nullable=False)
     active = Column(Boolean, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
     context = Column(Text, nullable=False)
     
     users = relationship('User', back_populates='role')

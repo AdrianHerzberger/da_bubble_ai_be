@@ -36,9 +36,8 @@ async def create_channel():
 
 @channel_routes.route("/get_channel_by_id/<channel_id>", methods=["GET"])
 async def get_channel_by_id(channel_id):
-    channel = await channel_data_manager.get_channel_by_id(channel_id)
-
     try:
+        channel = await channel_data_manager.get_channel_by_id(channel_id)
         if channel:
             return jsonify({
                 "channel_id": channel.id,
@@ -55,9 +54,8 @@ async def get_channel_by_id(channel_id):
 
 @channel_routes.route("/get_all_channels", methods=["GET"])
 async def get_all_channels():
-    channels = await channel_data_manager.get_all_channels()
-
     try:
+        channels = await channel_data_manager.get_all_channels()
         if channels:
             channel_list = []
             for channel in channels:

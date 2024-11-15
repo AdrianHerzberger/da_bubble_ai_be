@@ -14,9 +14,8 @@ role_data_manager = RoleDataManager()
 
 @user_routes.route("/get_user_by_id/<user_id>", methods=["GET"])
 async def get_user_by_id(user_id):
-    user = await user_data_manager.get_user_by_id(user_id)
-
     try:
+        user = await user_data_manager.get_user_by_id(user_id)
         if user:
             return jsonify({
                 "user_id": user.id,
@@ -33,8 +32,8 @@ async def get_user_by_id(user_id):
 
 @user_routes.route("/get_user_by_email/<user_email>", methods=["GET"])
 async def get_user_by_email(user_email):
-    user = await user_data_manager.get_user_by_email(user_email)
     try:
+        user = await user_data_manager.get_user_by_email(user_email)
         if user:
             return jsonify({
                 "user_id": user.id,
@@ -52,8 +51,7 @@ async def get_user_by_email(user_email):
 @user_routes.route("/get_all_users", methods=["GET"])
 async def get_all_user():
     try:
-        users = await user_data_manager.get_all_users()
-                
+        users = await user_data_manager.get_all_users()           
         if users:
             user_list = []
             for user in users:
@@ -61,7 +59,8 @@ async def get_all_user():
                     "user_id": user.id,
                     "user_name": user.user_name,
                     "user_email": user.user_email,
-                    "user_profile_picture_url": user.user_profile_picture_url
+                    "user_profile_picture_url": user.user_profile_picture_url,
+                    "role_id": user.role_id
                 }
                 user_list.append(user_data)
             return jsonify(user_list), 200
