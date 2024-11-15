@@ -2,6 +2,7 @@ import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.channel_message_manager import ChannelMessageManager
 from ..services.summarization import MessageThreadSuggestion
+from ..utils.summarization_provider import Summarization
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageManager()
@@ -15,7 +16,7 @@ async def create_message_channel():
     content = data.get("content")
     
     if channel_id is None:
-        raise Exception(f"Channel did not exist, can´t proceed to create message")
+        raise Exception(f"Channel did not exist, can't proceed to create message")
         return
 
     try:
@@ -33,37 +34,44 @@ async def create_message_channel():
     
 @channel_message_routes.route("/get_channel_messages/<channel_id>", methods=["GET"])
 async def get_channel_messages(channel_id):
-    channel_message = await channel_message_manager.get_channel_messages_by_id(channel_id)
-    
     try: 
-        if channel_message:
-            channel_message_list = []
-            for message in channel_message:
-                channel_message_data = {
-                    "message_id": message.id,
-                    "channel_id": message.channel_id,
-                    "sender_id": message.sender_id,
-                    "content": message.content,
-                    "message_time": message.timestamp
-                }
-                channel_message_list.append(channel_message_data)
-            return jsonify(channel_message_list), 200
-        else:
-            return jsonify({"error": "Channel message data not found"}), 404
+        channel_message = await channel_message_manager.get_channel_messages_by_id(channel_id)
+    
+        if request.method == "GET":       
+            contextual_insights = MessageThreadSuggestion()
+            keywords = contextual_insights.extract_keywords(channel_message)
+            
+            if keywords:
+                summarization = Summarization()
+                summarized_keywords = summarization.filter_summarization(keywords)
+                print(f"Result after filter: {summarized_keywords}")
+            else:
+                summarized_keywords = []
+                print("No keywords to summarize.")
+            
+            if channel_message:
+                channel_message_list = []
+                for message in channel_message:
+                    channel_message_data = {
+                        "message_id": message.id,
+                        "channel_id": message.channel_id,
+                        "sender_id": message.sender_id,
+                        "content": message.content,
+                        "message_time": message.timestamp
+                    }
+
+                    channel_message_list.append(channel_message_data)
+                return jsonify(channel_message_list), 200
+            else:
+                return jsonify({"error": "Channel message data not found"}), 404
     except Exception as e:
         print(f"Error getting channel message data: {e}")
         return jsonify({"error": "Failed to get channel message data"}), 500        
 
 
-@channel_message_routes.route("/get_all_channel_messages/", methods=["GET"])
-async def get_all_channel_messages():
+@channel_message_routes.route("/get_all_messages/", methods=["GET"])
+async def get_all_messages():
     channel_message = await channel_message_manager.get_all_messages()
-    
-    contextual_insights = MessageThreadSuggestion()
-    
-    keywords = await contextual_insights.extract_keywords()
-    print(f"keywords to extract : {keywords}")
-    
     try:
         if channel_message:
             channel_message_list = []

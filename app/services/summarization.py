@@ -1,19 +1,15 @@
 import asyncio
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import NMF
-from ..storage.channel_message_manager import ChannelMessageManager
-from ..utilites.tokenizer import Tokenizer
 import numpy as np
 import re
 
 class MessageThreadSuggestion():
     def __init__(self):
-        self.tokenizer_instance = Tokenizer()
         self.message_mention_terms = ["feature", "bug", "crash", "error", "load"]
-        self.channel_messages_manager = ChannelMessageManager()
 
-    async def extract_keywords(self):
-        messages = await self.channel_messages_manager.get_all_messages()
+    def extract_keywords(self, channel_message):
+        messages = channel_message
 
         if messages is None or len(messages) == 0:
             print("No messages found.")

@@ -7,6 +7,7 @@ from .routes.user_routes import user_routes
 from .routes.channel_routes import channel_routes
 from .routes.channel_user_association_routes import channel_user_association_routes
 from .routes.channel_message_routes import channel_message_routes
+from .routes.summarization_routes import summarization_routes
 from .session_management.create_async_engine import AsyncSessionLocal, async_engine, Base
 from config import Config
 import platform
@@ -30,6 +31,7 @@ app.register_blueprint(user_routes, url_prefix="/api")
 app.register_blueprint(channel_routes, url_prefix="/api")
 app.register_blueprint(channel_user_association_routes, url_prefix="/api")
 app.register_blueprint(channel_message_routes, url_prefix="/api")
+app.register_blueprint(summarization_routes, url_prefix="/api")
 
 # if platform.system() == "Windows":
 #     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
