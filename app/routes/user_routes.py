@@ -1,6 +1,7 @@
 import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.user_data_manager import UserDataManager
+from ..storage.role_data_manager import RoleDataManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
                                 get_jwt, set_access_cookies, set_refresh_cookies, 
                                 jwt_required, get_jwt_identity, unset_jwt_cookies)
@@ -8,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 
 user_routes = Blueprint("user_routes", __name__)
 user_data_manager = UserDataManager()
+role_data_manager = RoleDataManager()
 
 
 @user_routes.route("/get_user_by_id/<user_id>", methods=["GET"])
@@ -71,14 +73,14 @@ async def get_all_user():
 
 
 @user_routes.route("/register_user", methods=["POST"])
-def register_user():
+async def register_user():
     data = request.get_json()
     user_email = data.get('user_email')
     user_name = data.get('user_name')
     user_password = data.get('user_password')
 
     try:
-        new_user = user_data_manager.create_user(
+        new_user = await user_data_manager.create_user(
             user_email, user_name, user_password)
         return jsonify({"message": "User registered successfully"}), 201
     except Exception as e:
