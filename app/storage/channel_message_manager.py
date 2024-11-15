@@ -1,12 +1,12 @@
 import asyncio
 from ..models.channel_message_model import ChannelMessage
-from ..repository_manager.channel_message_manager_interface import ChannelMessageManagerInterface
+from ..repository_manager.channel_message_manager_interface import ChannelMessageDataManagerInterface
 from ..session_management.create_async_engine import AsyncSessionLocal
 from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 
-class ChannelMessageManager(ChannelMessageManagerInterface):
+class ChannelMessageManager(ChannelMessageDataManagerInterface):
     def __init__(self):
         self.db_session_factory = AsyncSessionLocal
         
