@@ -9,7 +9,6 @@ async def summarize():
     try:
         summarization = Summarization()
         summarization_result = summarization.summarization_result()
-        print(f"Result from summarization : {summarization_result}")
         return jsonify({"filtered_keywords": summarization_result}), 201
     except Exception as e:
         print(f"Error providing keywords: {e}")

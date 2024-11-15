@@ -8,10 +8,9 @@ channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageManager()
 
 
-@channel_message_routes.route("/create_message_channel", methods=["POST"])
-async def create_message_channel():
+@channel_message_routes.route("/create_message_channel/<channel_id>", methods=["POST"])
+async def create_message_channel(channel_id):
     data = request.get_json()
-    channel_id = data.get("channel_id")
     sender_id = data.get("sender_id")
     content = data.get("content")
     
@@ -44,7 +43,6 @@ async def get_channel_messages(channel_id):
             if keywords:
                 summarization = Summarization()
                 summarized_keywords = summarization.filter_summarization(keywords)
-                print(f"Result after filter: {summarized_keywords}")
             else:
                 summarized_keywords = []
                 print("No keywords to summarize.")
