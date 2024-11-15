@@ -6,13 +6,14 @@ from sqlalchemy.future import select
 import datetime
 import random
 
+
 class RoleDataManager(RoleDataManagerInterface):
     def __init__(self):
         self.db_session_factory = AsyncSessionLocal
-        
+
     async def create_role(self, title, slug, description, active, context):
         created_at = datetime.datetime.utcnow()
-        role_id = random.randint(100, 9999) 
+        role_id = random.randint(100, 9999)
         async with self.db_session_factory() as session:
             try:
                 new_role = Role(
@@ -32,12 +33,21 @@ class RoleDataManager(RoleDataManagerInterface):
                 print(f"Error creating role: {e}")
                 await session.rollback()
                 return None
-                      
+
+    async def get_all_roles(self):
+        async with self.db_session_factory() as session:
+            try:
+                all_roles = await session.execute(select(Role))
+                return all_roles.scalars().all()
+            except Exception as e:
+                print(f"Error fetching roles: {e}")
+                return None
+
     async def get_role_by_id(self, role_id):
         async with self.db_session_factory() as session:
             try:
                 role_id_query = await session.execute(select(Role).filter_by(id=role_id))
                 return role_id_query.scalar_one_or_none()
             except Exception as e:
-                print(f"Error fetching role id : {e}")
-                return None
+                print(f"Error fetching role by id: {e}")
+                return None                

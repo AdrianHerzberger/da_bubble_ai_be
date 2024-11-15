@@ -6,5 +6,9 @@ class RoleDataManagerInterface(ABC):
         pass
     
     @abstractclassmethod
+    def get_all_roles(self):
+        pass
+    
+    @abstractclassmethod
     def get_role_by_id(self, role_id):
         pass

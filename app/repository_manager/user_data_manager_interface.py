@@ -20,3 +20,7 @@ class UserDataManagerInterface(ABC):
     @abstractclassmethod
     def update_user_profile_picture(self, user_id, user_profile_picture_url):
         pass
+    
+    @abstractclassmethod
+    def assign_role_to_user(self, user_id, role_id):
+        pass

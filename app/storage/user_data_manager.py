@@ -94,3 +94,17 @@ class UserDataManager(UserDataManagerInterface):
                 print(f"Error updating users last login date: {e}")
                 await session.rollback()
                 return None
+            
+    async def assign_role_to_user(self, user_id, role_id):
+        async with self.db_session_factory() as session:
+            try:
+                user_id_query = await session.execute(select(User).filter_by(id=user_id))
+                user = user_id_query.scalar_one_or_none()
+                if user:
+                    user.role_id = role_id
+                    await session.commit()
+                    return True
+            except Exception as e:
+                print(f"Error updating users last login date: {e}")
+                await session.rollback()
+                return None
