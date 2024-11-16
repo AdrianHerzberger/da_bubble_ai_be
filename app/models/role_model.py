@@ -18,4 +18,4 @@ class Role(Base):
     context = Column(Text, nullable=False)
     
     users = relationship('User', back_populates='role')
-    user_roles = relationship('RolePermission', back_populates='roles')
+    user_roles = relationship('RolePermissionAssociation', back_populates='roles')

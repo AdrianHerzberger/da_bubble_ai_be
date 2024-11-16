@@ -10,6 +10,7 @@ from .routes.channel_message_routes import channel_message_routes
 from .routes.role_routes import role_routes
 from .routes.summarization_routes import summarization_routes
 from .routes.permission_routes import permission_routes
+from .routes.role_permission_association_routes import role_permission_association_routes
 from .session_management.create_async_engine import AsyncSessionLocal, async_engine, Base
 from config import Config
 import platform
@@ -35,25 +36,11 @@ app.register_blueprint(channel_user_association_routes, url_prefix="/api")
 app.register_blueprint(channel_message_routes, url_prefix="/api")
 app.register_blueprint(role_routes, url_prefix="/api")
 app.register_blueprint(permission_routes, url_prefix="/api")
+app.register_blueprint(role_permission_association_routes, url_prefix="/api")
 app.register_blueprint(summarization_routes, url_prefix="/api")
 
 # if platform.system() == "Windows":
 #     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-# # Initialize the database tables asynchronously at startup 
-# async def init_db():
-#     async with async_engine.begin() as conn:
-#         await conn.run_sync(Base.metadata.create_all)
-
-# # Set up the app and initialize async resources before running
-# def setup_app():
-#     try:
-#         asyncio.run(init_db())
-#     except RuntimeError as e:
-#         print(f"RuntimeError during async setup: {e}")
-#         raise
-
-# setup_app()
 
 # Close the async session after each request
 # @app.teardown_appcontext

@@ -27,7 +27,7 @@ from app.models.channel_message_model import ChannelMessage
 from app.models.direct_message_model import DirectMessage
 from app.models.role_model import Role
 from app.models.permission_model import Permission
-from app.models.role_permission_model import RolePermission
+from app.models.role_permission_model import RolePermissionAssociation
 from app.session_management.create_async_engine import Base
 
 target_metadata = Base.metadata

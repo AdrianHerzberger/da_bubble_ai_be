@@ -4,8 +4,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from ..session_management.create_async_engine import Base 
 
 
-class RolePermission(Base):
-    __tablename__ = "role_permission"
+class RolePermissionAssociation(Base):
+    __tablename__ = "role_permission_association"
     
     role_id = Column(BigInteger, ForeignKey('roles.id'), primary_key=True)
     permission_id = Column(BigInteger, ForeignKey('permissions.id'), primary_key=True)
