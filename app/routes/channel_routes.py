@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from ..storage.channel_data_manager import ChannelDataManager
 from ..storage.channel_user_association_data_manager import ChannelUserAssociationManager
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from ..services.role_management import role_required, role_management
 
 channel_routes = Blueprint("channel_routes", __name__)
 channel_data_manager = ChannelDataManager()
@@ -10,6 +11,7 @@ channel_user_association_manager = ChannelUserAssociationManager()
 
 @channel_routes.route("/create_channel", methods=["POST"])
 @jwt_required()
+@role_required("manager", "developer", "sales_officer", "supporter", "administrator", "super_administrator")
 async def create_channel():
     data = request.get_json()
     channel_name = data.get("channel_name")

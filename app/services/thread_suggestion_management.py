@@ -4,7 +4,7 @@ from sklearn.decomposition import NMF
 import numpy as np
 import re
 
-class MessageThreadSuggestion():
+class MessageThreadSuggestion:
     def __init__(self):
         self.message_mention_terms = ["feature", "bug", "crash", "error", "load"]
 

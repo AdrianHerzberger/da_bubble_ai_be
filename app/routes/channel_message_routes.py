@@ -1,7 +1,7 @@
 import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.channel_message_manager import ChannelMessageManager
-from ..services.summarization import MessageThreadSuggestion
+from ..services.thread_suggestion_management import MessageThreadSuggestion
 from ..utils.summarization_provider import Summarization
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
