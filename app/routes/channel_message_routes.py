@@ -3,6 +3,9 @@ from flask import Blueprint, jsonify, request
 from ..storage.channel_message_manager import ChannelMessageManager
 from ..services.thread_suggestion_management import MessageThreadSuggestion
 from ..utils.summarization_provider import Summarization
+from ..utils.pagination_offset import PaginationOffset
+from ..models.channel_message_model import ChannelMessage
+from ..configuartions.channel_message_serializer import ChannelMessageSerializer
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageManager()
@@ -69,10 +72,23 @@ async def get_channel_messages(channel_id):
 @channel_message_routes.route("/get_all_messages/", methods=["GET"])
 async def get_all_messages():
     try:
-        channel_message = await channel_message_manager.get_all_messages()
-        if channel_message:
+        channel_messages = await channel_message_manager.get_all_messages()
+        if not channel_messages:
+            return jsonify({"error": "Channel messages not found"}), 404
+
+        page_number = int(request.args.get("page_number", 1))
+        page_size = int(request.args.get("page_size", 20))
+
+        paginator = PaginationOffset(page_number=page_number, page_size=page_size)
+
+        context = {}
+
+        response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
+        print(f"Paginated respone: {response}")
+         
+        if channel_messages:
             channel_message_list = []
-            for message in channel_message:
+            for message in channel_messages:
                 channel_message_data = {
                     "message_id": message.id,
                     "channel_id": message.channel_id,
