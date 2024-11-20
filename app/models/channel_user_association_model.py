@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Integer, ForeignKey, Column
 from sqlalchemy.dialects.postgresql import UUID 
 from sqlalchemy.orm import relationship
-from ..session_management.create_async_engine import Base  
+from ..instances.create_async_engine import Base  
 
 class ChannelUserAssociation(Base):
     __tablename__ = 'channel_user_association'

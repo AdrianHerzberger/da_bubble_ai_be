@@ -1,5 +1,5 @@
 import asyncio
-from ..session_management.create_async_engine import AsyncSessionLocal, Base
+from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.user_model import User
 from ..repository_manager.user_data_manager_interface import UserDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError

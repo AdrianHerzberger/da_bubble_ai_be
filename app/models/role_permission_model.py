@@ -1,7 +1,7 @@
 from sqlalchemy import BigInteger, Boolean, Integer, ForeignKey, Column, Text, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID 
-from ..session_management.create_async_engine import Base 
+from ..instances.create_async_engine import Base 
 
 
 class RolePermissionAssociation(Base):

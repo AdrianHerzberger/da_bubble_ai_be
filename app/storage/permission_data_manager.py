@@ -1,5 +1,5 @@
 import asyncio
-from ..session_management.create_async_engine import AsyncSessionLocal, Base
+from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.permission_model import Permission
 from ..repository_manager.permission_data_manager_interface import PermissionDataManagerInterface
 from sqlalchemy.future import select

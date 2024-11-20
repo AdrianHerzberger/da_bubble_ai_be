@@ -1,5 +1,5 @@
 import asyncio
-from ..session_management.create_async_engine import AsyncSessionLocal, Base
+from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.role_model import Role
 from ..repository_manager.role_data_manager_interface import RoleDataManagerInterface
 from sqlalchemy.future import select

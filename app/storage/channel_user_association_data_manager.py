@@ -1,5 +1,5 @@
 import asyncio
-from ..session_management.create_async_engine import AsyncSessionLocal
+from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.channel_user_association_model import ChannelUserAssociation
 from ..repository_manager.channel_user_association_data_manager_interface import ChannelUserAssociationDataManagerInterface
 from ..models.user_model import User

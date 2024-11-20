@@ -23,11 +23,3 @@ AsyncSessionLocal = sessionmaker(
     class_=AsyncSession, 
     expire_on_commit=False
 )
-
-# @asynccontextmanager
-# async def get_session():
-#     async with AsyncSessionLocal() as session:
-#         try:
-#             yield session
-#         finally:
-#             await session.close()

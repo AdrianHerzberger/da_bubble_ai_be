@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Integer, ForeignKey, Column, Text, DateTime
 from sqlalchemy.dialects.postgresql import UUID 
 from sqlalchemy.orm import relationship
-from ..session_management.create_async_engine import Base 
+from ..instances.create_async_engine import Base 
 import datetime
 
 class DirectMessage(Base):

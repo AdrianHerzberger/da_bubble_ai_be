@@ -1,5 +1,5 @@
 import asyncio
-from ..session_management.create_async_engine import AsyncSessionLocal
+from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.role_permission_model import RolePermissionAssociation
 from ..models.role_model import Role
 from ..models.permission_model import Permission
