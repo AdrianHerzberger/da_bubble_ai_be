@@ -84,7 +84,7 @@ class UserDataManager(UserDataManagerInterface):
     async def update_user_last_login_date(self, user_id, last_login_date):
         async with self.db_session_factory() as session:
             try:
-                user_id_query = await sesssion.execute(select(User).filter_by(id=user_id))
+                user_id_query = await session.execute(select(User).filter_by(id=user_id))
                 user = user_id_query.scalar_one_or_none()
                 if user:
                     user.last_login_date = last_login_date
