@@ -2,6 +2,8 @@ import asyncio
 from ..models.channel_message_model import ChannelMessage
 from ..repository_manager.channel_message_manager_interface import ChannelMessageDataManagerInterface
 from ..instances.create_async_engine import AsyncSessionLocal
+from ..instances.elastic_search_engine import es_elastic_search_engine as es
+from ..configuartions.channel_message_index_mapper import mapping_channel_message_index
 from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
@@ -24,17 +26,23 @@ class ChannelMessageManager(ChannelMessageDataManagerInterface):
                 session.add(new_message)
                 await session.commit()
                 await session.refresh(new_message)
+                await mapping_channel_message_index([new_message])
                 return new_message          
             except Exception as e:
                 print(f"Error creating message: {e}")
                 session.rollback()
                 return None
             
-    async def get_channel_messages_by_id(self, channel_id):
+    async def get_channel_messages_by_id(self, channel_id, search_index=[]):
+        print(f"State of search index : {search_index}")
+        print("" * 2)
         async with self.db_session_factory() as session:
             try:
                 channel_message_id_query = await session.execute(select(ChannelMessage).filter_by(channel_id=channel_id))
-                return channel_message_id_query.scalars().all()
+                messages = channel_message_id_query.scalars().all()
+                if search_index == []:
+                    await mapping_channel_message_index(messages)
+                return messages
             except Exception as e:
                 print(f"Error fetching channel message: {e}")
                 return None

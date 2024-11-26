@@ -8,6 +8,7 @@ from .routes.auth_routes import auth_routes
 from .routes.channel_routes import channel_routes
 from .routes.channel_user_association_routes import channel_user_association_routes
 from .routes.channel_message_routes import channel_message_routes
+from .routes.search_query_routes import search_query_routes
 from .routes.role_routes import role_routes
 from .routes.summarization_routes import summarization_routes
 from .routes.permission_routes import permission_routes
@@ -31,6 +32,7 @@ app.register_blueprint(auth_routes, url_prefix="/api")
 app.register_blueprint(channel_routes, url_prefix="/api")
 app.register_blueprint(channel_user_association_routes, url_prefix="/api")
 app.register_blueprint(channel_message_routes, url_prefix="/api")
+app.register_blueprint(search_query_routes, url_prefix="/api")
 app.register_blueprint(role_routes, url_prefix="/api")
 app.register_blueprint(permission_routes, url_prefix="/api")
 app.register_blueprint(role_permission_association_routes, url_prefix="/api")
