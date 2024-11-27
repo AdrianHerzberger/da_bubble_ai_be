@@ -3,7 +3,7 @@ from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.role_permission_model import RolePermissionAssociation
 from ..models.role_model import Role
 from ..models.permission_model import Permission
-from ..repository_manager.role_permission_association_data_manager_interface import RolePermissionAssociationDataManagerInterface
+from ..storage_manager.role_permission_association_data_manager_interface import RolePermissionAssociationDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select 
 from sqlalchemy import and_ 

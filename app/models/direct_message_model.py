@@ -16,5 +16,5 @@ class DirectMessage(Base):
 
     sender = relationship('User', foreign_keys=[sender_id], back_populates='sent_messages')
     receiver = relationship('User', foreign_keys=[receiver_id], back_populates='received_messages')
-
+    thread = relationship('ThreadMessage', uselist=False, back_populates='direct_message')
     

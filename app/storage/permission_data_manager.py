@@ -1,7 +1,7 @@
 import asyncio
 from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.permission_model import Permission
-from ..repository_manager.permission_data_manager_interface import PermissionDataManagerInterface
+from ..storage_manager.permission_data_manager_interface import PermissionDataManagerInterface
 from sqlalchemy.future import select
 import datetime
 import random

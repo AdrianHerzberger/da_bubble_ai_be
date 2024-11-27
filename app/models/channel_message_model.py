@@ -17,6 +17,7 @@ class ChannelMessage(Base):
     
     sender = relationship('User', back_populates='channel_messages')
     channel = relationship('Channel', back_populates='messages')
+    thread = relationship('ThreadMessage',  uselist=False, back_populates='channel_message')
     
         
     

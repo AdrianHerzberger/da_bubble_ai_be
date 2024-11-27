@@ -1,7 +1,7 @@
 import asyncio
 from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.role_model import Role
-from ..repository_manager.role_data_manager_interface import RoleDataManagerInterface
+from ..storage_manager.role_data_manager_interface import RoleDataManagerInterface
 from sqlalchemy.future import select
 import datetime
 import random

@@ -1,6 +1,6 @@
 import asyncio
 from ..models.channel_message_model import ChannelMessage
-from ..repository_manager.channel_message_manager_interface import ChannelMessageDataManagerInterface
+from ..storage_manager.channel_message_manager_interface import ChannelMessageDataManagerInterface
 from ..instances.create_async_engine import AsyncSessionLocal
 from ..instances.elastic_search_engine import es_elastic_search_engine as es
 from ..configuartions.channel_message_index_mapper import mapping_channel_message_index

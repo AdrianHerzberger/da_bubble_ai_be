@@ -6,3 +6,4 @@ from app.models.direct_message_model import DirectMessage
 from app.models.role_model import Role
 from app.models.permission_model import Permission
 from app.models.role_permission_model import RolePermissionAssociation
+from app.models.thread_message_model import ThreadMessage

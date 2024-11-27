@@ -1,7 +1,7 @@
 import asyncio
 from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.channel_model import Channel
-from ..repository_manager.channel_data_manager_interface import ChannelDataManagerInterface
+from ..storage_manager.channel_data_manager_interface import ChannelDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 import datetime
