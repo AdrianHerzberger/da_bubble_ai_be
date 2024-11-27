@@ -27,7 +27,7 @@ async def create_message_channel(channel_id):
         if new_message:
             return jsonify({"message": "Message created successfully"}), 201
         else:
-            return jsonify({"error": "Failed to create message"}), 500
+            return jsonify({"error": "Failed to create message"}), 404
 
     except Exception as e:
         print(f"Error creating message for channel: {e}")
