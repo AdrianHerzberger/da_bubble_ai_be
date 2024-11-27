@@ -15,6 +15,7 @@ services:
       - ./elasticsearch-logs:/usr/share/elasticsearch/logs
     environment:
       - xpack.security.http.ssl.enabled=false
+      - xpack.security.enabled=false
       - discovery.type=single-node
       - ELASTIC_PASSWORD=my_password
     ports:
