@@ -4,8 +4,7 @@ from config import Config
 
 HOST_URL = Config.ELASTIC_SEARCH_HOST
 ELASTIC_KEY = Config.ELASTIC_KEY
-print(f"The host url is : {HOST_URL}")
-print(f"The elastic key is: {ELASTIC_KEY}")
+
 es_elastic_search_engine = AsyncElasticsearch(
     [{'host': 'localhost', 'port':9200, 'scheme':'http'}],
     verify_certs=False,

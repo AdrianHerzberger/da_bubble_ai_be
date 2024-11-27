@@ -8,6 +8,9 @@ docker run -d -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.en
 
 docker-compose up -d
 
+# activate venv 
+.\venv\Scripts\activate
+
 # Run Da Bubble app:
-CMD ["flask", "run", "--host=0.0.0.0"]
+python run.py
 
