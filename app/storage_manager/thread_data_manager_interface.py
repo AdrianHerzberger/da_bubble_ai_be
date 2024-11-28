@@ -13,7 +13,3 @@ class ThreadMessageDataManagerInterface(ABC):
     def get_thread_messages_direct_id(self, direct_message_id):
         pass
     
-    @abstractclassmethod
-    def get_all_thread_messages(self):
-        pass
-    
