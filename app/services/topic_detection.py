@@ -1,6 +1,6 @@
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
-from ..storage.channel_message_manager import ChannelMessageManager
+from ..storage.channel_message_data_manager import ChannelMessageManager
 from ..utilites.tokenizer import Tokenizer
 
 def detect_topics(n_topics=2):

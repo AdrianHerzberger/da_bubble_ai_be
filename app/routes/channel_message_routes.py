@@ -1,6 +1,6 @@
 import asyncio
 from flask import Blueprint, jsonify, request
-from ..storage.channel_message_manager import ChannelMessageManager
+from ..storage.channel_message_data_manager import ChannelMessageManager
 from ..services.thread_suggestion_management import MessageThreadSuggestion
 from ..utils.summarization_provider import Summarization
 from ..utils.pagination_offset import PaginationOffset
