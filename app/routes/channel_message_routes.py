@@ -69,10 +69,10 @@ async def get_channel_messages(channel_id):
         return jsonify({"error": "Failed to get channel message data"}), 500        
 
 
-@channel_message_routes.route("/get_all_messages/", methods=["GET"])
-async def get_all_messages():
+@channel_message_routes.route("/get_all_channel_messages/", methods=["GET"])
+async def get_all_channel_messages():
     try:
-        channel_messages = await channel_message_manager.get_all_messages()
+        channel_messages = await channel_message_manager.get_all_channel_messages()
         if not channel_messages:
             return jsonify({"error": "Channel messages not found"}), 404
 

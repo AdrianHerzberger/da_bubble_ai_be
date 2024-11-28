@@ -34,7 +34,6 @@ class ChannelMessageDataManager(ChannelMessageDataManagerInterface):
                 return None
             
     async def get_channel_messages_by_id(self, channel_id, search_index=[]):
-        print(f"State of search index : {search_index}")
         async with self.db_session_factory() as session:
             try:
                 channel_message_id_query = await session.execute(select(ChannelMessage).filter_by(channel_id=channel_id))
@@ -47,7 +46,7 @@ class ChannelMessageDataManager(ChannelMessageDataManagerInterface):
                 print(f"Error fetching channel message: {e}")
                 return None
             
-    async def get_all_messages(self):       
+    async def get_all_channel_messages(self):       
         async with self.db_session_factory() as session:
             try:
                 all_messages = await session.execute(select(ChannelMessage))

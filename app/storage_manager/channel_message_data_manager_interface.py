@@ -10,6 +10,6 @@ class ChannelMessageDataManagerInterface(ABC):
         pass
      
     @abstractclassmethod
-    def get_all_messages(self):
+    def get_all_channel_messages(self):
         pass
     
