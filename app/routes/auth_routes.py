@@ -18,7 +18,7 @@ async def login():
     user_password = data.get("user_password")
     user = await user_data_manager.get_user_by_email(user_email)
     
-    last_login_date = datetime.today().strftime('%Y-%m-%d')
+    last_login_date = datetime.now()
     user_id = user.id
 
     try:
@@ -47,7 +47,23 @@ async def login():
         print(f"Error during login: {e}")
         return jsonify({"error": "Failed to login user"}), 500
     
+    
+@auth_routes.route("/current_user", methods=["GET"])
+@jwt_required()
+async def current_user():
+    try:
+        user_id = get_jwt_identity()
+        user = await user_data_manager.get_user_by_id(user_id)
+        return jsonify({
+            "user_id": user.id,
+            "user_name": user.user_name,
+            "email": user.user_email
+        }), 200
+    except Exception as e:
+        print(f"Error getting current user token: {e}")
+        return jsonify({"error": "Failed to get current user"}), 500
 
+    
 @auth_routes.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():
