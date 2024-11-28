@@ -1,6 +1,6 @@
 import asyncio
 from flask import Blueprint, jsonify, request
-from ..storage.channel_message_data_manager import ChannelMessageManager
+from ..storage.channel_message_data_manager import ChannelMessageDataManager
 from ..services.thread_suggestion_management import MessageThreadSuggestion
 from ..utils.summarization_provider import Summarization
 from ..utils.pagination_offset import PaginationOffset
@@ -8,7 +8,7 @@ from ..models.channel_message_model import ChannelMessage
 from ..configuartions.channel_message_serializer import ChannelMessageSerializer
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
-channel_message_manager = ChannelMessageManager()
+channel_message_manager = ChannelMessageDataManager()
 
 
 @channel_message_routes.route("/create_message_channel/<channel_id>", methods=["POST"])

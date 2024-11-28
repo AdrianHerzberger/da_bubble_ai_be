@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 
-class ChannelMessageManager(ChannelMessageDataManagerInterface):
+class ChannelMessageDataManager(ChannelMessageDataManagerInterface):
     def __init__(self):
         self.db_session_factory = AsyncSessionLocal
         
@@ -30,7 +30,7 @@ class ChannelMessageManager(ChannelMessageDataManagerInterface):
                 return new_message          
             except Exception as e:
                 print(f"Error creating message: {e}")
-                session.rollback()
+                await session.rollback()
                 return None
             
     async def get_channel_messages_by_id(self, channel_id, search_index=[]):

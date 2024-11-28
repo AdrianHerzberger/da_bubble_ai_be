@@ -1,11 +1,11 @@
 import asyncio
 from flask import Flask, request, jsonify
 from flask import Blueprint, jsonify, request
-from ..storage.channel_message_data_manager import ChannelMessageManager
+from ..storage.channel_message_data_manager import ChannelMessageDataManager
 from ..utils.channel_message_search_query import search_messages
 
 search_query_routes = Blueprint("search_query_routes", __name__)
-channel_message_manager = ChannelMessageManager()
+channel_message_manager = ChannelMessageDataManager()
 
 @search_query_routes.route("/search/<channel_id>", methods=["GET"])
 async def search_term(channel_id):
