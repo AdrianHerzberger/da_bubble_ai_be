@@ -28,8 +28,21 @@ async def create_message_channel(channel_id):
     except Exception as e:
         print(f"Error creating message for channel: {e}")
         return jsonify({"error": "Server error"}), 500
+
+
+@channel_message_routes.route("/delete_channel_message/<channel_message_id>", methods=["POST"])
+async def delete_channel_message(channel_message_id):
+    try:
+        deleted_message = await channel_message_manager.delete_channel_message(channel_message_id)
+        if deleted_message:
+            return jsonify({"success": "Channel message deleted successfully"}), 200
+        else:  
+            return jsonify({"error": "Channel message not found"}), 404
+    except Exception as e:
+        print(f"Error deleting channel message data: {e}")
+        return jsonify({"error": "Failed to delete channel message data"}), 500
     
-    
+
 @channel_message_routes.route("/get_channel_messages/<channel_id>", methods=["GET"])
 async def get_channel_messages(channel_id):
     try: 

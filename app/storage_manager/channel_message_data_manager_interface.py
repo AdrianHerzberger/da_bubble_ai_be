@@ -8,6 +8,10 @@ class ChannelMessageDataManagerInterface(ABC):
     @abstractclassmethod
     def get_channel_messages_by_id(self, channel_id):
         pass
+
+    @abstractclassmethod
+    def delete_channel_message(self, channel_message_id):
+        pass
      
     @abstractclassmethod
     def get_all_channel_messages(self):
