@@ -6,6 +6,7 @@ from ..utils.summarization_provider import Summarization
 from ..utils.pagination_offset import PaginationOffset
 from ..models.channel_message_model import ChannelMessage
 from ..configuartions.channel_message_serializer import ChannelMessageSerializer
+import pprint
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageDataManager()
@@ -76,17 +77,19 @@ async def get_all_channel_messages():
         if not channel_messages:
             return jsonify({"error": "Channel messages not found"}), 404
 
-        page_number = int(request.args.get("page_number", 1))
-        page_size = int(request.args.get("page_size", 20))
+        page_number = int(request.args.get("page_number", 2))
+        page_size = int(request.args.get("page_size", 10))
 
         paginator = PaginationOffset(page_number=page_number, page_size=page_size)
 
         context = {}
 
-        response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
-        print(f"Paginated respone: {response}")
-         
-        if channel_messages:
+        paginated_channel_response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
+        pprint.pprint(f"Paginated respone: {paginated_channel_response}")
+
+        if paginated_channel_response:
+            return jsonify(paginated_channel_response), 200
+        elif channel_messages:
             channel_message_list = []
             for message in channel_messages:
                 channel_message_data = {

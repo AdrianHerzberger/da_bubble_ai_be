@@ -38,7 +38,7 @@ class PaginationOffset:
         lower_limit, upper_limit = self.get_offset()
         print(f"Pagination slice: {lower_limit} to {upper_limit}")
 
-        paginated_queryset = queryset[lower_limit:upper_limit] if lower_limit < len(queryset) else queryset
+        paginated_queryset = queryset[lower_limit:upper_limit] if lower_limit < len(queryset) else []
         print(f"Paginated queryset: {paginated_queryset}")
 
         total_objects_count = len(queryset)
