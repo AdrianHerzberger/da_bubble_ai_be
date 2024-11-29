@@ -32,7 +32,7 @@ async def create_message_direct(sender_id):
 @direct_message_routes.route("/get_direct_message_by_id/<receiver_id>", methods=["GET"])
 async def get_direct_message_by_id(receiver_id):
     try:
-        direct_messages = await direct_message_manager.get_direct_message_by_id(receiver_id)
+        direct_messages = await direct_message_manager.get_direct_messages_by_id(receiver_id)
         if not direct_messages:
             return jsonify({"error": "Direct messages not found"}), 404
 

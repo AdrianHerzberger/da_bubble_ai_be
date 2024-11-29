@@ -6,7 +6,7 @@ class DirectMessageDataManagerInterface(ABC):
         pass
     
     @abstractclassmethod
-    def get_direct_message_by_id(self, receiver_id):
+    def get_direct_messages_by_id(self, receiver_id):
         pass
     
     @abstractclassmethod

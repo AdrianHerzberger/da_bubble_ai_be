@@ -2,20 +2,20 @@ from elasticsearch import Elasticsearch
 from ..instances.elastic_search_engine import es_elastic_search_engine as es
 import pprint 
 
-async def search_channel_messages(channel_id, keyword):
+async def search_direct_messages(receiver_id, keyword):
     query_body = {
         "query": {
             "bool": {
-                "must": [
+                "must" : [
                     {"match": {"content": keyword}}
                 ],
                 "filter": [
-                    {"term": {"channel_id.keyword": channel_id}}
+                    {"term": {"receiver_id.keyword": receiver_id}}
                 ]
             }
         }
     }
-    
+
     try: 
         response = await es.search(index="messages", body=query_body)
         pprint.pprint(f"Elastic searchg response query: {response}")
@@ -32,3 +32,4 @@ async def search_channel_messages(channel_id, keyword):
     except Exception as e:
         print(f"Error querying elastic search: {e}")
         return []
+
