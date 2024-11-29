@@ -33,7 +33,7 @@ class ChannelMessageDataManager(ChannelMessageDataManagerInterface):
                 await session.rollback()
                 return None
             
-    async def get_channel_messages_by_id(self, channel_id, search_index=[]):
+    async def get_channel_messages_by_id(self, channel_id, search_index=any):
         async with self.db_session_factory() as session:
             try:
                 channel_message_id_query = await session.execute(select(ChannelMessage).filter_by(channel_id=channel_id))

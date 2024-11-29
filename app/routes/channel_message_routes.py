@@ -1,12 +1,8 @@
-import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.channel_message_data_manager import ChannelMessageDataManager
-from ..services.thread_suggestion_management import MessageThreadSuggestion
-from ..utils.summarization_provider import Summarization
 from ..utils.pagination_offset import PaginationOffset
 from ..models.channel_message_model import ChannelMessage
 from ..configuartions.channel_message_serializer import ChannelMessageSerializer
-import pprint
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageDataManager()
@@ -20,7 +16,6 @@ async def create_message_channel(channel_id):
     
     if channel_id is None:
         raise Exception(f"Channel did not exist, can't proceed to create message")
-        return
 
     try:
         new_message = await channel_message_manager.create_message(channel_id, sender_id, content)
@@ -38,33 +33,37 @@ async def create_message_channel(channel_id):
 @channel_message_routes.route("/get_channel_messages/<channel_id>", methods=["GET"])
 async def get_channel_messages(channel_id):
     try: 
-        channel_message = await channel_message_manager.get_channel_messages_by_id(channel_id)
-        if channel_message:       
-            contextual_insights = MessageThreadSuggestion()
-            keywords = contextual_insights.extract_keywords(channel_message)
-            
-            if keywords:
-                summarization = Summarization()
-                summarized_keywords = summarization.filter_summarization(keywords)
-            else:
-                summarized_keywords = []
-                print("No keywords to summarize.")
-            
-            if channel_message:
-                channel_message_list = []
-                for message in channel_message:
-                    channel_message_data = {
-                        "message_id": message.id,
-                        "channel_id": message.channel_id,
-                        "sender_id": message.sender_id,
-                        "content": message.content,
-                        "message_time": message.timestamp
-                    }
+        channel_messages = await channel_message_manager.get_channel_messages_by_id(channel_id)
+        if not channel_messages:
+            return jsonify({"error": "Channel messages not found"}), 404
 
-                    channel_message_list.append(channel_message_data)
-                return jsonify(channel_message_list), 200
-            else:
-                return jsonify({"error": "Channel message data not found"}), 404
+        page_number = int(request.args.get("page_number", 2))
+        page_size = int(request.args.get("page_size", 10))
+
+        paginator = PaginationOffset(page_number=page_number, page_size=page_size)
+
+        context = {}
+
+        paginated_channel_response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
+
+        if paginated_channel_response:
+            return jsonify(paginated_channel_response)
+    
+        elif channel_messages:
+            channel_message_list = []
+            for message in channel_messages:
+                channel_message_data = {
+                    "message_id": message.id,
+                    "channel_id": message.channel_id,
+                    "sender_id": message.sender_id,
+                    "content": message.content,
+                    "message_time": message.timestamp
+                }
+
+                channel_message_list.append(channel_message_data)
+            return jsonify(channel_message_list), 200
+        else:
+            return jsonify({"error": "Channel message data not found"}), 404
     except Exception as e:
         print(f"Error getting channel message data: {e}")
         return jsonify({"error": "Failed to get channel message data"}), 500        
@@ -85,7 +84,6 @@ async def get_all_channel_messages():
         context = {}
 
         paginated_channel_response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
-        pprint.pprint(f"Paginated respone: {paginated_channel_response}")
 
         if paginated_channel_response:
             return jsonify(paginated_channel_response), 200
