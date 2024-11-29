@@ -52,6 +52,27 @@ async def get_thread_messages_channel_id(channel_message_id):
     except Exception as e:
         print(f"Error getting thread message data: {e}")
         return jsonify({"error": "Failed to get channel message data"}), 500
-    
-    
+
+
+@thread_message_routes.route("/get_thread_messages_direct_id/<receiver_id>", methods=["GET"])
+async def get_thread_messages_direct_id(receiver_id):
+    try:
+        thread_messages = await thread_message_manager.get_thread_messages_direct_id(receiver_id)
+        if thread_messages:
+            thread_message_list = []
+            for thread_message in thread_messages:
+                thread_message_data = {
+                    "id": thread_message.id,
+                    "thread_type": thread_message.thread_type,
+                    "content": thread_message.content,
+                    "thread_suggestion": thread_message.thread_suggestion
+                }
+                thread_message_list.append(thread_message_data)
+            return jsonify(thread_message_list), 200
+        else:
+            return jsonify({"error": "Thread message data not found"}), 404      
+    except Exception as e:
+        print(f"Error getting thread message data: {e}")
+        return jsonify({"error": "Failed to get channel message data"}), 500
+
        
