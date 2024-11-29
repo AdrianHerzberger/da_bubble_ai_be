@@ -47,7 +47,7 @@ async def get_channel_messages(channel_id):
         paginated_channel_response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
 
         if paginated_channel_response:
-            return jsonify(paginated_channel_response)
+            return jsonify(paginated_channel_response), 200
     
         elif channel_messages:
             channel_message_list = []
@@ -83,10 +83,10 @@ async def get_all_channel_messages():
 
         context = {}
 
-        paginated_channel_response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
+        paginated_channel_messages_response = paginator(ChannelMessage, channel_messages, ChannelMessageSerializer, context)
 
-        if paginated_channel_response:
-            return jsonify(paginated_channel_response), 200
+        if paginated_channel_messages_response:
+            return jsonify(paginated_channel_messages_response), 200
         elif channel_messages:
             channel_message_list = []
             for message in channel_messages:

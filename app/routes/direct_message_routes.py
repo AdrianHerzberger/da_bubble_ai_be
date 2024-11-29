@@ -1,7 +1,8 @@
-import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.direct_message_data_manager import DirectMessageDataManager
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from ..utils.pagination_offset import PaginationOffset
+from ..models.direct_message_model import DirectMessage
+from ..configuartions.direct_message_serializer import DirectMessageSerializer
 
 direct_message_routes = Blueprint("direct_message_routes", __name__)
 direct_message_manager = DirectMessageDataManager()
@@ -14,7 +15,6 @@ async def create_message_direct(sender_id):
     
     if receiver_id is None:
         raise Exception(f"Receiver id must exist, can't preceed to create message")
-        return
     
     try:
         new_message = await direct_message_manager.create_direct_message(
@@ -32,10 +32,25 @@ async def create_message_direct(sender_id):
 @direct_message_routes.route("/get_direct_message_by_id/<receiver_id>", methods=["GET"])
 async def get_direct_message_by_id(receiver_id):
     try:
-        direct_message = await direct_message_manager.get_direct_message_by_id(receiver_id)
-        if direct_message:
+        direct_messages = await direct_message_manager.get_direct_message_by_id(receiver_id)
+        if not direct_messages:
+            return jsonify({"error": "Direct messages not found"}), 404
+
+        page_number = int(request.args.get("page_number", 1))
+        page_size = int(request.args.get("page_size", 10))
+
+        paginator = PaginationOffset(page_number=page_number, page_size=page_size)
+
+        context = {}
+
+        paginated_direct_messages_response = paginator(DirectMessage, direct_messages, DirectMessageSerializer, context)
+
+        if paginated_direct_messages_response:
+            return jsonify(paginated_direct_messages_response), 200
+
+        elif direct_messages:
             direct_message_list = []
-            for message in direct_message:
+            for message in direct_messages:
                 direct_message_data = {
                     "message_id": message.id,
                     "sender_id": message.sender_id,
