@@ -74,7 +74,7 @@ async def register_user():
     try:
         new_user = await user_data_manager.create_user(
             user_email, user_name, user_password)
-        return jsonify({"message": "User registered successfully"}), 201
+        return jsonify(new_user), 201
     except Exception as e:
         print(f"Error creating user: {e}")
         return jsonify({"error": "Failed to create user"}), 500

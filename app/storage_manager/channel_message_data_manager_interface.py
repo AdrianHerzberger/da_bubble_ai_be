@@ -12,6 +12,10 @@ class ChannelMessageDataManagerInterface(ABC):
     @abstractclassmethod
     def delete_channel_message(self, channel_message_id):
         pass
+
+    @abstractclassmethod
+    def update_channel_message(self, channel_message_id, message_content_update):
+        pass
      
     @abstractclassmethod
     def get_all_channel_messages(self):
