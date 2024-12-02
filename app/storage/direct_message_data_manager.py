@@ -15,7 +15,7 @@ class DirectMessageDataManager(DirectMessageDataManagerInterface):
         self.db_session_factory = AsyncSessionLocal
          
     async def create_direct_message(self, sender_id, receiver_id, content):
-        timestamp = datetime.datetime.now(datetime.timezone.utc)
+        timestamp = datetime.datetime.utcnow()
         
         async with self.db_session_factory() as session:
             try:

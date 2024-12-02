@@ -14,7 +14,8 @@ class ChannelMessageDataManager(ChannelMessageDataManagerInterface):
         self.db_session_factory = AsyncSessionLocal
         
     async def create_message(self, channel_id, sender_id, content):
-        timestamp = datetime.datetime.now(datetime.timezone.utc)
+        timestamp = datetime.datetime.utcnow()
+        
         async with self.db_session_factory() as session:
             try: 
                 new_message = ChannelMessage(
