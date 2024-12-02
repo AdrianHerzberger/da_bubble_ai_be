@@ -4,6 +4,8 @@ from ..storage_manager.direct_message_data_manager_interface import DirectMessag
 from ..instances.create_async_engine import AsyncSessionLocal
 from ..configuartions.mapping_direct_message_indexs import mapping_direct_message_indexs
 from sqlalchemy.future import select
+from sqlalchemy import update
+from sqlalchemy import delete
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 
@@ -32,6 +34,42 @@ class DirectMessageDataManager(DirectMessageDataManagerInterface):
                 print(f"Error creating message: {e}")
                 await session.rollback()
                 return None
+
+    async def delete_direct_message(self, direct_message_id: str) -> bool:
+        async with self.db_session_factory() as session:
+            try:
+                message_id_to_delete = await session.execute(
+                    delete(DirectMessage)
+                    .where(DirectMessage.id == direct_message_id)
+                )
+
+                if message_id_to_delete.rowcount == 0:
+                    return False
+
+                await session.commit()
+                return True
+            except Exception as e:
+                print(f"Error deleting direct message: {e}")
+                return None           
+
+    async def update_direct_message(self, direct_message_id: str, message_content_update: str) -> bool:
+        async with self.db_session_factory() as session:
+            try:
+                message_id_to_update = await session.execute(
+                    update(DirectMessage)
+                    .where(DirectMessage.id == direct_message_id)
+                    .values(content=message_content_update)
+                )
+
+                if message_id_to_update.rowcount == 0:
+                    return False
+
+                await session.commit()
+                return True
+            except Exception as e:
+                print(f"Error updating direct message: {e}")
+                await session.rollback()
+                return None    
             
     async def get_direct_messages_by_id(self, receiver_id, search_index=any):
         async with self.db_session_factory() as session:

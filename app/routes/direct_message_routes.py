@@ -27,8 +27,37 @@ async def create_message_direct(sender_id):
     except Exception as e:
         print(f"Error creating message for channel: {e}")
         return jsonify({"error": "Server error"}), 500
-    
-    
+
+
+@direct_message_routes.route("/delete_channel_message/<direct_message_id>", methods=["DELETE"])
+async def delete_channel_message(direct_message_id):
+    try:
+        deleted_message = await direct_message_manager.delete_direct_message(direct_message_id)
+        if deleted_message:
+            return jsonify({"success": "Direct message deleted successfully"}), 200
+        else:  
+            return jsonify({"error": "Direct message not found"}), 404
+    except Exception as e:
+        print(f"Error deleting direct message data: {e}")
+        return jsonify({"error": "Failed to delete direct message data"}), 500
+
+
+@direct_message_routes.route("/update_direct_message/<direct_message_id>", methods=["PATCH"])
+async def update_direct_message(direct_message_id):
+    data = request.get_json()
+    message_content_update = data.get("update_content")
+
+    try:
+        update_message = await direct_message_manager.update_direct_message(direct_message_id, message_content_update)
+        if update_message:
+            return jsonify({"success": "Direct message updated successfully"})
+        else:
+             return jsonify({"error": "Direct message not found"}), 404
+    except Exception as e:
+        print(f"Error updating direct message data: {e}")
+        return jsonify({"error": "Failed to update direct message data"}), 500   
+
+
 @direct_message_routes.route("/get_direct_message_by_id/<receiver_id>", methods=["GET"])
 async def get_direct_message_by_id(receiver_id):
     try:
