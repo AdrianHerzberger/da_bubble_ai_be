@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
+import datetime
 
 
 class UserDataManager(UserDataManagerInterface):
@@ -33,7 +34,7 @@ class UserDataManager(UserDataManagerInterface):
                 session.add(new_user) 
                 await session.commit() 
                 await session.refresh(new_user) 
-                return new_user     
+                return True     
             except Exception as e:
                 print(f"Error creating user: {e}")
                 await session.rollback() 

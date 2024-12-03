@@ -1,6 +1,6 @@
 from ..instances.elastic_search_engine import es_elastic_search_engine as es
 
-async def mapping_direct_message_indexs(messages):
+async def mapping_direct_message_index(messages):
     for message in messages:
             try:
                 await es.index(

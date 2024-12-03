@@ -2,7 +2,7 @@ import asyncio
 from ..models.direct_message_model import DirectMessage
 from ..storage_manager.direct_message_data_manager_interface import DirectMessageDataManagerInterface
 from ..instances.create_async_engine import AsyncSessionLocal
-from ..configuartions.mapping_direct_message_indexs import mapping_direct_message_indexs
+from ..configuartions.direct_message_index_mapping import mapping_direct_message_index
 from sqlalchemy.future import select
 from sqlalchemy import update
 from sqlalchemy import delete
@@ -28,7 +28,7 @@ class DirectMessageDataManager(DirectMessageDataManagerInterface):
                 session.add(new_message)
                 await session.commit()
                 await session.refresh(new_message)
-                await mapping_direct_message_indexs([new_message])
+                await mapping_direct_message_index([new_message])
                 return new_message          
             except Exception as e:
                 print(f"Error creating message: {e}")
@@ -78,7 +78,7 @@ class DirectMessageDataManager(DirectMessageDataManagerInterface):
                 messages = direct_message_id_query.scalars().all()
                 if not search_index:
                     if messages:
-                        await mapping_direct_message_indexs(messages)
+                        await mapping_direct_message_index(messages)
                 return messages
             except Exception as e:
                 print(f"Error fetching direct message: {e}")
