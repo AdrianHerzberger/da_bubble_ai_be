@@ -1,5 +1,6 @@
 from transformers import pipeline
 from sentence_transformers import SentenceTransformer, util
+from ..configuartions.sentiment_analyzes_values import SENTIMENT_ANALYZES_VALUES
 import numpy as np
 
 
@@ -11,6 +12,7 @@ class SentimentSuggestion:
             revision="714eb0f"
         )
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        self.sentiment__analyzes_values = SENTIMENT_ANALYZES_VALUES
 
     def analyze_sentiment(self, channel_messages):
         messages = channel_messages
@@ -23,23 +25,34 @@ class SentimentSuggestion:
         for msg in messages:
             content_list.append(msg.content)
 
-        sentiment_results = self.sentiment_model(content_list)
+        sentiments_to_process = self.sentiment_model(content_list)
         sentiment_suggestions = []
 
-
-        for idx, result in enumerate(sentiment_results):
+        for idx, result in enumerate(sentiments_to_process):
             sentiment_suggestions.append({
                 "message": content_list[idx],
                 "sentiment": result['label'],
                 "score": result['score']
             })
 
+        preprocessed_sentiment_results = self.preprocess_sentiments(content_list)
         similarity_results = self.check_similarity(content_list)
 
         return {
-            "sentiment_analysis": sentiment_suggestions,
+            "sentiment_analysis": list({frozenset(item.items()): item for item in (sentiment_suggestions + preprocessed_sentiment_results)}.values()),
             "similarity_analysis": similarity_results
         }
+
+    def preprocess_sentiments(self, content_list):
+        sentiment_results = []
+        for message in content_list:
+            if any(keyword.lower() in message.lower() for keyword in self.sentiment__analyzes_values):
+                sentiment_results.append({
+                    "message": message,
+                    "sentiment": "NEUTRAL",
+                    "score": 1.0
+                })
+        return sentiment_results
 
     def check_similarity(self, content_list):
         if not content_list or len(content_list) < 2:
