@@ -3,7 +3,9 @@ from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.user_model import User
 from ..storage_manager.user_data_manager_interface import UserDataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.future import select
+from sqlalchemy import select
+from sqlalchemy import update
+from sqlalchemy import delete
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import datetime
@@ -67,6 +69,42 @@ class UserDataManager(UserDataManagerInterface):
                 print(f"Error fetching user by email: {e}")
                 return None
 
+    async def delete_user(self, user_id: str) -> bool:
+        async with self.db_session_factory() as session:
+            try:
+                user_id_to_delete = await session.execute(
+                    delete(User)
+                    .where(User.id == user_id)
+                )
+
+                if user_id_to_delete.rowcount == 0:
+                    return False
+
+                await session.commit()
+                return True
+            except Exception as e:
+                print(f"Error deleting user by id: {e}")
+                return None
+
+    async def update_user(self, user_id: str, update_user_name: str) -> bool:
+        async with self.db_session_factory() as session:
+            try:
+                user_id_to_update = await session.execute(
+                    update(User)
+                    .where(User.id == user_id)
+                    .values(user_name=update_user_name)
+                )
+
+                if user_id_to_update.rowcount == 0:
+                    return False
+
+                await session.commit()
+                return True
+            except Exception as e:
+                print(f"Error updating user by id: {e}")
+                await session.rollback()
+                return None
+
     def check_user_password(self, user_password, stored_hashed_password):
         return check_password_hash(stored_hashed_password, user_password)
 
@@ -96,16 +134,3 @@ class UserDataManager(UserDataManagerInterface):
                 await session.rollback()
                 return None
             
-    async def assign_role_to_user(self, user_id, role_id):
-        async with self.db_session_factory() as session:
-            try:
-                user_id_query = await session.execute(select(User).filter_by(id=user_id))
-                user = user_id_query.scalar_one_or_none()
-                if user:
-                    user.role_id = role_id
-                    await session.commit()
-                    return True
-            except Exception as e:
-                print(f"Error updating users last login date: {e}")
-                await session.rollback()
-                return None

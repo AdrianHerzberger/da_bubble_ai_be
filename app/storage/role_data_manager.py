@@ -1,6 +1,7 @@
 import asyncio
 from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.role_model import Role
+from ..models.user_model import User
 from ..storage_manager.role_data_manager_interface import RoleDataManagerInterface
 from sqlalchemy.future import select
 import datetime
@@ -50,4 +51,20 @@ class RoleDataManager(RoleDataManagerInterface):
                 return role_id_query.scalar_one_or_none()
             except Exception as e:
                 print(f"Error fetching role by id: {e}")
-                return None                
+                return None 
+
+    async def assign_role_to_user(self, user_id, role_id):
+        async with self.db_session_factory() as session:
+            try:
+                user_id_query = await session.execute(select(User).filter_by(id=user_id))
+                user = user_id_query.scalar_one_or_none()
+                if user:
+                    user.role_id = role_id
+                    await session.commit()
+                    return True
+            except Exception as e:
+                print(f"Error assigning role to user: {e}")
+                await session.rollback()
+                return None
+
+              

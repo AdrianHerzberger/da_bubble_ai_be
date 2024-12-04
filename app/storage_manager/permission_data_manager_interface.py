@@ -12,3 +12,7 @@ class PermissionDataManagerInterface(ABC):
     @abstractclassmethod
     def get_permission_by_id(self, permission_id):
         pass
+
+    @abstractclassmethod
+    def assign_permission_to_user(self, permission_id):
+        pass

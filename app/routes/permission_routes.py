@@ -1,9 +1,11 @@
 import asyncio
 from flask import Blueprint, jsonify, request
 from ..storage.permission_data_manager import PermissionDataManager
+from ..storage.user_data_manager import UserDataManager
 
 permission_routes =  Blueprint("permission_routes", __name__)
 permission_data_manager = PermissionDataManager()
+user_data_manager = UserDataManager()
 
 
 @permission_routes.route("/create_permission", methods=["POST"])
@@ -65,3 +67,32 @@ async def get_all_roles():
     except Exception as e:
         print(f"Error getting all permission data: {e}")
         return jsonify({"error": "Failed to get all ermissions"}, 500)
+
+
+@permission_routes.route("/assign_permission", methods=["POST"])
+async def assign_permission():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    permission_id = data.get("permission_id")
+
+    if not user_id or not permission_id:
+        return {"error": "user_id and permission_id are required"}, 400
+    
+    try:
+        user = await user_data_manager.get_user_by_id(user_id)
+        permission = await permission_data_manager.get_permission_by_id(permission_id)
+
+        if not user:
+            return jsonify({"error": "User not found"}), 400
+        if not permission:
+            return jsonify({"error": "Permission not found"}), 400
+
+        user_permission_managment = await permission_data_manager.assign_permission_to_user(user_id, permission_id)
+
+        if user_permission_managment:
+            return jsonify({"message": f"Permission '{permission.title}' assigned to user '{user.user_name}' successfully"})
+        else:
+            return jsonify({"error": "Failed to assign permission to user"}), 404
+    except Exception as e:
+        print(f"Error assigning role: {e}")
+        return jsonify({"error": "An error occurred while assigning role"}), 500

@@ -17,4 +17,5 @@ class Permission(Base):
     updated_at = Column(DateTime, nullable=True)
     context = Column(Text, nullable=False)
     
+    users = relationship('User', back_populates='permission')
     user_permission = relationship('RolePermissionAssociation', back_populates='permissions')

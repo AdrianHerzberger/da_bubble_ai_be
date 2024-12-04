@@ -1,6 +1,7 @@
 import asyncio
 from ..instances.create_async_engine import AsyncSessionLocal
 from ..models.permission_model import Permission
+from ..models.user_model import User
 from ..storage_manager.permission_data_manager_interface import PermissionDataManagerInterface
 from sqlalchemy.future import select
 import datetime
@@ -50,4 +51,18 @@ class PermissionDataManager(PermissionDataManagerInterface):
                 return permission_id_query.scalar_one_or_none()
             except Exception as e:
                 print(f"Error fetching permission by id: {e}")
-                return None                
+                return None 
+
+    async def assign_permission_to_user(self, user_id, permission_id):
+        async with self.db_session_factory() as session:
+            try:
+                user_id_query = await session.execute(select(User).filter_by(id=user_id))
+                user = user_id_query.scalar_one_or_none()
+                if user:
+                    user.permission_id = permission_id
+                    await session.commit()
+                    return True
+            except Exception as e:
+                print(f"Error assigning permission to user: {e}")
+                await session.rollback()
+                return None              

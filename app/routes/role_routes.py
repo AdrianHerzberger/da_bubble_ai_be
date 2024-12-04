@@ -87,12 +87,12 @@ async def assign_role():
         if not role:
             return jsonify({"error": "Role not found"}), 400
 
-        user_role_assigment = await user_data_manager.assign_role_to_user(user_id, role_id)
+        user_role_assigment = await role_data_manager.assign_role_to_user(user_id, role_id)
         
         if user_role_assigment:
             return jsonify({"message": f"Role '{role.title}' assigned to user '{user.user_name}' successfully"}), 200
         else:
-            return jsonify({"error": "Failed to assign role to user"}), 500
+            return jsonify({"error": "Failed to assign role to user"}), 404
     except Exception as e:
         print(f"Error assigning role: {e}")
         return jsonify({"error": "An error occurred while assigning role"}), 500

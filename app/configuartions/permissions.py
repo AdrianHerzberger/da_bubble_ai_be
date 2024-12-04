@@ -1,0 +1,4 @@
+PERMISSIONS = [
+    "manage-users",
+    "generell"
+]

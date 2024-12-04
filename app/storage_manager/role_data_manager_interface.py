@@ -12,3 +12,7 @@ class RoleDataManagerInterface(ABC):
     @abstractclassmethod
     def get_role_by_id(self, role_id):
         pass
+
+    @abstractclassmethod
+    def assign_role_to_user(self, user_id, role_id):
+        pass 

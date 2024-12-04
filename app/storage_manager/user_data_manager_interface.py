@@ -16,11 +16,16 @@ class UserDataManagerInterface(ABC):
     @abstractclassmethod
     def get_user_by_email(self, user_email):
         pass
+
+    @abstractclassmethod
+    def delete_user(self, user_id):
+        pass
+
+    @abstractclassmethod
+    def update_user(self, user_id, update_user_name):
+        pass
     
     @abstractclassmethod
     def update_user_profile_picture(self, user_id, user_profile_picture_url):
         pass
     
-    @abstractclassmethod
-    def assign_role_to_user(self, user_id, role_id):
-        pass

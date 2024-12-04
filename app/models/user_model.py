@@ -15,6 +15,7 @@ class User(Base):
     user_profile_picture_url = Column(String(255), nullable=True)
     
     role_id = Column(BigInteger, ForeignKey('roles.id'), nullable=True)
+    permission_id = Column(BigInteger, ForeignKey('permissions.id'), nullable=True)
     
     last_login_date = Column(DateTime, nullable=True)
     create_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
@@ -23,6 +24,7 @@ class User(Base):
     status = Column(String(50), nullable=False, default="active")
     
     role = relationship('Role', back_populates='users')
+    permission = relationship('Permission', back_populates='users')
     
     channel_associations = relationship('ChannelUserAssociation', back_populates='user')
     channels = relationship('Channel', secondary='channel_user_association', back_populates='users', viewonly=True)
