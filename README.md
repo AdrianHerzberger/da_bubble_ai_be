@@ -14,3 +14,6 @@ docker-compose up -d
 # Run Da Bubble app:
 python run.py
 
+
+# Run unittests:
+python -m unittest

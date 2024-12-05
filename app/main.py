@@ -1,5 +1,5 @@
 import asyncio
-from flask import Flask
+from flask import Flask, redirect
 from asgiref.wsgi import WsgiToAsgi
 from flask_jwt_extended import JWTManager
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -28,6 +28,10 @@ API_URL = "/static/da_bubble.json"
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL, API_URL, config={"app_name": "DA_Bubble_API"}
 )
+
+@app.route("/")
+def root():
+    return redirect("/api/docs")
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 app.register_blueprint(user_routes, url_prefix="/api")
 app.register_blueprint(auth_routes, url_prefix="/api")
