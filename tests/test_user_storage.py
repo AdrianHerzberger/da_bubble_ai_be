@@ -51,8 +51,24 @@ class TestUserStorage(unittest.TestCase):
         self.assertIn("john.doe@example.com", response.get_data(as_text=True))
         mock_get_user_by_id.assert_awaited_once_with("c62fed14-8e82-44bb-9a74-361115f6e2d6")
 
-    
-    
+
+    @patch("app.routes.user_routes.UserDataManager.get_user_by_email")
+    def test_get_user_by_email(self, moch_get_user_by_email):
+
+        mock_user = AsyncMock()
+        mock_user.id = "c62fed14-8e82-44bb-9a74-361115f6e2d6"
+        mock_user.user_name = "Jane Doe"
+        mock_user.user_email = "jane.doe@example.com"
+        mock_user.user_profile_picture_url = "jane.com/profile.jpg"
+
+        moch_get_user_by_email.return_value = mock_user
+
+        response = self.client.get("get_user_by_email/jane.doe@example.com")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Jane Doe", response.get_data(as_text=True))
+        self.assertIn("jane.doe@example.com", response.get_data(as_text=True))
+        moch_get_user_by_email.assert_awaited_once_with("jane.doe@example.com")
 
 
 

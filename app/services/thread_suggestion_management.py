@@ -55,7 +55,7 @@ class MessageThreadSuggestion:
         keywords = []
         
         feature_names = vectorizer.get_feature_names_out()
-        for topic_idx, topic in enumerate(nmf.components_):
+        for topic in enumerate(nmf.components_):
             for i in topic.argsort()[:-6:-1]:
                 topic_keywords = feature_names[i]
                 keywords.extend(topic_keywords)   
