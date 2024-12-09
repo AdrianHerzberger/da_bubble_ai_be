@@ -4,64 +4,28 @@
     "title": "Blog CMS API",
     "version": "1.0.0"
   },
-  "servers": [{ "url": "http://localhost:5001" }],
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": ["http"],
   "paths": {
-    "/api/register_user": {
+    "/login": {
       "post": {
-        "summary": "Register a new user",
+        "summary": "User Login",
         "requestBody": {
-          "description": "User registration data",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "user_name": { "type": "string" },
-                  "user_email": { "type": "string", "format": "email" },
-                  "user_password": { "type": "string" }
-                },
-                "required": ["user_name", "user_email", "user_password"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "user_name": { "type": "string" },
-                    "user_email": { "type": "string", "format": "email" },
-                    "user_password": { "type": "string" }
+                  "user_email": {
+                    "type": "string",
+                    "description": "User's email"
+                  },
+                  "user_password": {
+                    "type": "string",
+                    "description": "User's password"
                   }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error creating user"
-          }
-        }
-      }
-    },
-    "/api/login": {
-      "post": {
-        "summary": "Login a user",
-        "requestBody": {
-          "description": "User login data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_email": { "type": "string", "format": "email" },
-                  "user_password": { "type": "string" }
                 },
                 "required": ["user_email", "user_password"]
               }
@@ -70,53 +34,178 @@
         },
         "responses": {
           "201": {
-            "description": "Login user successfully",
+            "description": "Login successful",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string" },
-                    "user_email": { "type": "string", "format": "email" },
-                    "user_password": { "type": "string" }
+                    "message": {
+                      "type": "string"
+                    },
+                    "user_id": {
+                      "type": "string"
+                    },
+                    "user_name": {
+                      "type": "string"
+                    },
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid email or password"
+          },
+          "500": {
+            "description": "Failed to login user"
+          }
+        }
+      }
+    },
+    "/current_user": {
+      "get": {
+        "summary": "Get Current User",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Current user details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "string"
+                    },
+                    "user_name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    }
                   }
                 }
               }
             }
           },
           "500": {
-            "description": "Error login user"
+            "description": "Failed to get current user"
           }
         }
       }
     },
-    "/api/get_user_by_id/{user_id}": {
-      "get": {
-        "summary": "Get user by UUID",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
+    "/refresh": {
+      "post": {
+        "summary": "Refresh Access Token",
+        "security": [{ "bearerAuth": [] }],
         "responses": {
           "200": {
-            "description": "User found",
+            "description": "Token refreshed successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user_id": { "type": "string", "format": "uuid" },
-                    "user_name": { "type": "string" },
-                    "user_email": { "type": "string" },
-                    "user_profile_picture_url": { "type": "string" }
+                    "message": {
+                      "type": "string"
+                    },
+                    "access_token": {
+                      "type": "string"
+                    }
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to refresh token"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "summary": "User Logout",
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protected": {
+      "get": {
+        "summary": "Protected Resource",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Access granted to protected resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      }
+    },
+    "/get_user_by_id/{user_id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User data retrieved",
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "123",
+                  "user_name": "John Doe",
+                  "user_email": "john@example.com",
+                  "user_profile_picture_url": "http://example.com/pic.jpg"
                 }
               }
             }
@@ -125,7 +214,7 @@
         }
       }
     },
-    "/api/get_user_by_email/{user_email}": {
+    "/get_user_by_email/{user_email}": {
       "get": {
         "summary": "Get user by email",
         "parameters": [
@@ -133,230 +222,44 @@
             "name": "user_email",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "description": "The email of the user",
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "User found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user_id": { "type": "string", "format": "uuid" },
-                    "user_name": { "type": "string" },
-                    "user_email": { "type": "string" },
-                    "user_profile_picture_url": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
+          "200": { "description": "User data retrieved" },
           "404": { "description": "User not found" }
         }
       }
     },
-    "/api/all_users": {
-      "get": {
-        "summary": "Get all users",
-        "description": "Retrieve a list of all registered users",
-        "responses": {
-          "200": {
-            "description": "List of users retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "user_id": { "type": "string", "format": "uuid" },
-                      "user_name": { "type": "string" },
-                      "user_email": { "type": "string" },
-                      "user_profile_picture_url": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": { "description": "Users not found" },
-          "500": { "description": "Failed to get all user data" }
-        }
-      }
-    },
-    "/api/all_channels": {
-      "get": {
-        "summary": "Get all channels",
-        "description": "Retrieve a list of all channels",
-        "responses": {
-          "200": {
-            "description": "List of channels retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "channel_id": { "type": "integer" },
-                      "channel_name": { "type": "string" },
-                      "channel_description": { "type": "string" },
-                      "channel_color": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": { "description": "Channels not found" },
-          "500": { "description": "Failed to get all channel data" }
-        }
-      }
-    },
-    "/api/channel_associated_user/{user_id}": {
-      "get": {
-        "summary": "Get all channels associated with user",
+    "/delete_user/{user_id}": {
+      "delete": {
+        "summary": "Delete user",
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "description": "Retrieve a list of all channels associated with this user",
-        "responses": {
-          "200": {
-            "description": "List of channels retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "channel_id": { "type": "integer" },
-                      "channel_name": { "type": "string" },
-                      "channel_description": { "type": "string" },
-                      "channel_color": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Channels associated with this user not found"
-          },
-          "500": {
-            "description": "Failed to get all channels associated with this user"
-          }
-        }
-      }
-    },
-    "/api/user_associated_channel/{channel_id}": {
-      "get": {
-        "summary": "Get all users associated with channel",
-        "parameters": [
-          {
-            "name": "channel_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "description": "Retrieve a list of all users associated with this channel",
-        "responses": {
-          "200": {
-            "description": "List of users retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "user_id": { "type": "integer" },
-                      "user_name": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Users associated with this channel not found"
-          },
-          "500": {
-            "description": "Failed to get all users associated with this channel"
-          }
-        }
-      }
-    },
-    "/api/get_channel_by_id/{channel_id}": {
-      "get": {
-        "summary": "Get channel by ID",
-        "parameters": [
-          {
-            "name": "channel_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "description": "The ID of the user to delete",
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "User found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "channel_id": { "type": "integer" },
-                    "channel_name": { "type": "string" },
-                    "channel_description": { "type": "string" },
-                    "channel_color": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
+          "200": { "description": "User deleted successfully" },
           "404": { "description": "User not found" }
         }
       }
     },
-    "/api/create_channel": {
+    "/create_channel": {
       "post": {
-        "summary": "Create a channel",
+        "summary": "Create a new channel",
         "requestBody": {
-          "description": "Create channel data",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "channel_name": { "type": "string" },
-                  "channel_description": { "type": "string" },
-                  "channel_color": { "type": "string" },
-                  "user_id": { "type": "number" }
-                },
-                "required": [
-                  "channel_name",
-                  "channel_description",
-                  "channel_color",
-                  "user_id"
-                ]
+              "example": {
+                "channel_name": "General",
+                "channel_description": "Main discussion channel"
               }
             }
           }
@@ -366,29 +269,294 @@
             "description": "Channel created successfully",
             "content": {
               "application/json": {
+                "example": {
+                  "message": "Channel created successfully",
+                  "channel_id": "456"
+                }
+              }
+            }
+          },
+          "500": { "description": "Failed to create channel" }
+        }
+      }
+    },
+    "/get_channel_by_id/{channel_id}": {
+      "get": {
+        "summary": "Get channel by ID",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the channel",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Channel data retrieved",
+            "content": {
+              "application/json": {
+                "example": {
+                  "channel_id": "456",
+                  "channel_name": "General",
+                  "channel_description": "Main discussion channel",
+                  "channel_color": "#FF0000"
+                }
+              }
+            }
+          },
+          "404": { "description": "Channel not found" }
+        }
+      }
+    },
+    "/get_all_channels": {
+      "get": {
+        "summary": "Get all channels",
+        "responses": {
+          "200": {
+            "description": "List of channels",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "channel_id": "456",
+                    "channel_name": "General",
+                    "channel_description": "Main discussion channel",
+                    "channel_color": "#FF0000"
+                  },
+                  {
+                    "channel_id": "789",
+                    "channel_name": "Support",
+                    "channel_description": "Support discussions",
+                    "channel_color": "#00FF00"
+                  }
+                ]
+              }
+            }
+          },
+          "404": { "description": "Channels not found" }
+        }
+      }
+    },
+    "/create_message_channel/{channel_id}": {
+      "post": {
+        "summary": "Create a message in a channel",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the channel",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "sender_id": "123",
+                "content": "Hello, this is a test message!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Message created successfully" },
+          "404": { "description": "Channel does not exist" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/delete_channel_message/{channel_message_id}": {
+      "delete": {
+        "summary": "Delete a channel message",
+        "parameters": [
+          {
+            "name": "channel_message_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the channel message",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Message deleted successfully" },
+          "404": { "description": "Message not found" },
+          "500": { "description": "Failed to delete message" }
+        }
+      }
+    },
+    "/update_channel_message/{channel_message_id}": {
+      "patch": {
+        "summary": "Update a channel message",
+        "parameters": [
+          {
+            "name": "channel_message_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the channel message",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "update_content": "Updated message content"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Message updated successfully" },
+          "404": { "description": "Message not found" },
+          "500": { "description": "Failed to update message" }
+        }
+      }
+    },
+    "/get_channel_messages/{channel_id}": {
+      "get": {
+        "summary": "Get all messages for a channel",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the channel",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "required": false,
+            "description": "Page number for pagination",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "description": "Number of messages per page",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Messages retrieved successfully" },
+          "404": { "description": "Messages not found" },
+          "500": { "description": "Failed to retrieve messages" }
+        }
+      }
+    },
+    "/get_all_channel_messages/": {
+      "get": {
+        "summary": "Get all channel messages across all channels",
+        "parameters": [
+          {
+            "name": "page_number",
+            "in": "query",
+            "required": false,
+            "description": "Page number for pagination",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "description": "Number of messages per page",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "All messages retrieved successfully" },
+          "404": { "description": "Messages not found" },
+          "500": { "description": "Failed to retrieve messages" }
+        }
+      }
+    },
+    "/get_channel_messages/{channel_id}/summarization": {
+      "get": {
+        "summary": "Get Summarized Channel Messages",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the channel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summarized keywords for the channel messages",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "channel_name": { "type": "string" },
-                    "channel_description": { "type": "string" },
-                    "channel_color": { "type": "string" },
-                    "user_id": { "type": "number" }
+                  "type": "array",
+                  "items": {
+                    "type": "string"
                   }
                 }
               }
             }
           },
+          "404": {
+            "description": "Channel message data not found"
+          },
           "500": {
-            "description": "Error creating channel"
+            "description": "Failed to get channel message data"
           }
         }
       }
     },
-    "/api/create_user_association_to_channel": {
+    "/get_channel_messages/{channel_id}/suggestion": {
+      "get": {
+        "summary": "Get Suggestions from Channel Messages",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the channel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Suggestions derived from channel messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "suggestion": {
+                      "type": "string",
+                      "description": "Sentiment-based suggestion"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Channel message data not found"
+          },
+          "500": {
+            "description": "Failed to get channel message data"
+          }
+        }
+      }
+    },
+    "/create_user_association_to_channel": {
       "post": {
-        "summary": "Create a channel user association",
+        "summary": "Create User-Channel Associations",
         "requestBody": {
-          "description": "Create a channel user association",
           "required": true,
           "content": {
             "application/json": {
@@ -398,10 +566,14 @@
                   "user_id": {
                     "type": "array",
                     "items": {
-                      "type": "number"
-                    }
+                      "type": "string"
+                    },
+                    "description": "List of user IDs to associate with the channel"
                   },
-                  "channel_id": { "type": "number" }
+                  "channel_id": {
+                    "type": "string",
+                    "description": "ID of the channel"
+                  }
                 },
                 "required": ["user_id", "channel_id"]
               }
@@ -410,70 +582,1116 @@
         },
         "responses": {
           "201": {
-            "description": "Channel user association created successfully",
+            "description": "Channel user associations created successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user_id": {
+                    "message": {
+                      "type": "string",
+                      "example": "Channel user associations created successfully"
+                    },
+                    "user_ids": {
                       "type": "array",
                       "items": {
-                        "type": "number"
+                        "type": "string"
                       }
                     },
-                    "channel_id": { "type": "number" }
+                    "channel_id": {
+                      "type": "string"
+                    }
                   }
                 }
               }
             }
           },
+          "400": {
+            "description": "Invalid input, user_id must be a list"
+          },
           "500": {
-            "description": "Error creating channel user association"
+            "description": "Failed to create channel user associations"
           }
         }
       }
     },
-    "/api/create_message_channel": {
+    "/get_users_for_channel/{channel_id}": {
+      "get": {
+        "summary": "Get Users for a Channel",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the channel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users associated with the channel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "user_id": {
+                        "type": "string"
+                      },
+                      "user_name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No users found for the given channel ID"
+          },
+          "500": {
+            "description": "Failed to fetch users"
+          }
+        }
+      }
+    },
+    "/get_channels_for_user/{user_id}": {
+      "get": {
+        "summary": "Get Channels for a User",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of channels associated with the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "channel_id": {
+                        "type": "string"
+                      },
+                      "channel_name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No channels found for the given user ID"
+          },
+          "500": {
+            "description": "Failed to fetch channels"
+          }
+        }
+      }
+    },
+    "/create_message_direct/{sender_id}": {
       "post": {
-        "summary": "Create a message",
+        "summary": "Create a Direct Message",
+        "parameters": [
+          {
+            "name": "sender_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID of the sender"
+          }
+        ],
         "requestBody": {
-          "description": "Create message data",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "channel_id": { "type": "number" },
-                  "sender_id": { "type": "number" },
-                  "content": { "type": "string" },
-                  "timestamp": { "type": "string" }
+                  "receiver_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the receiver"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Content of the message"
+                  }
                 },
-                "required": ["channel_id", "sender_id", "content", "timestamp"]
+                "required": ["receiver_id", "content"]
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Message created successfully",
+            "description": "Message created successfully"
+          },
+          "404": {
+            "description": "Failed to create message"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete_direct_message/{direct_message_id}": {
+      "delete": {
+        "summary": "Delete a Direct Message",
+        "parameters": [
+          {
+            "name": "direct_message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID of the direct message"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Direct message deleted successfully"
+          },
+          "404": {
+            "description": "Direct message not found"
+          },
+          "500": {
+            "description": "Failed to delete direct message data"
+          }
+        }
+      }
+    },
+    "/update_direct_message/{direct_message_id}": {
+      "patch": {
+        "summary": "Update a Direct Message",
+        "parameters": [
+          {
+            "name": "direct_message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID of the direct message"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "update_content": {
+                    "type": "string",
+                    "description": "Updated content of the message"
+                  }
+                },
+                "required": ["update_content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Direct message updated successfully"
+          },
+          "404": {
+            "description": "Direct message not found"
+          },
+          "500": {
+            "description": "Failed to update direct message data"
+          }
+        }
+      }
+    },
+    "/get_direct_message_by_id/{receiver_id}": {
+      "get": {
+        "summary": "Get Direct Messages by Receiver ID",
+        "parameters": [
+          {
+            "name": "receiver_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID of the receiver"
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Page size for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of direct messages"
+          },
+          "404": {
+            "description": "Direct messages not found"
+          },
+          "500": {
+            "description": "Failed to get direct message data"
+          }
+        }
+      }
+    },
+    "/get_all_direct_messages": {
+      "get": {
+        "summary": "Get All Direct Messages",
+        "responses": {
+          "200": {
+            "description": "List of all direct messages"
+          },
+          "404": {
+            "description": "Direct messages not found"
+          },
+          "500": {
+            "description": "Failed to get direct message data"
+          }
+        }
+      }
+    },
+    "/create_permission": {
+      "post": {
+        "summary": "Create a new permission",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the permission"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "Unique slug for the permission"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the permission"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Whether the permission is active"
+                  },
+                  "context": {
+                    "type": "string",
+                    "description": "Context of the permission"
+                  }
+                },
+                "required": ["title", "slug", "description"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permission created successfully"
+          },
+          "500": {
+            "description": "Failed to create permission"
+          }
+        }
+      }
+    },
+    "/get_permission_by_id/{permission_id}": {
+      "get": {
+        "summary": "Get permission by ID",
+        "parameters": [
+          {
+            "name": "permission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the permission"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission details retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "channel_id": { "type": "number" },
-                    "sender_id": { "type": "number" },
-                    "content": { "type": "string" },
-                    "timestamp": { "type": "string" }
+                    "title": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Permission not found"
+          },
+          "500": {
+            "description": "Failed to retrieve permission"
+          }
+        }
+      }
+    },
+    "/get_all_permissions/": {
+      "get": {
+        "summary": "Get all permissions",
+        "responses": {
+          "200": {
+            "description": "List of all permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "role_id": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "slug": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      },
+                      "context": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No permissions found"
+          },
+          "500": {
+            "description": "Failed to retrieve permissions"
+          }
+        }
+      }
+    },
+    "/assign_permission": {
+      "post": {
+        "summary": "Assign a permission to a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "description": "ID of the user"
+                  },
+                  "permission_id": {
+                    "type": "integer",
+                    "description": "ID of the permission"
+                  }
+                },
+                "required": ["user_id", "permission_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission assigned to user successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Permission 'Permission Title' assigned to user 'User Name' successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user ID or permission ID"
+          },
+          "500": {
+            "description": "Failed to assign permission"
+          }
+        }
+      }
+    },
+    "/create_role": {
+      "post": {
+        "summary": "Create a new role",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the role"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "Unique slug for the role"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the role"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Whether the role is active"
+                  },
+                  "context": {
+                    "type": "string",
+                    "description": "Context of the role"
+                  }
+                },
+                "required": ["title", "slug", "description"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role created successfully"
+          },
+          "500": {
+            "description": "Failed to create role"
+          }
+        }
+      }
+    },
+    "/get_role_by_id/{role_id}": {
+      "get": {
+        "summary": "Get role by ID",
+        "parameters": [
+          {
+            "name": "role_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the role"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Role not found"
+          },
+          "500": {
+            "description": "Failed to retrieve role"
+          }
+        }
+      }
+    },
+    "/get_all_roles/": {
+      "get": {
+        "summary": "Get all roles",
+        "responses": {
+          "200": {
+            "description": "List of all roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "role_id": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "slug": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      },
+                      "context": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No roles found"
+          },
+          "500": {
+            "description": "Failed to retrieve roles"
+          }
+        }
+      }
+    },
+    "/assign_role": {
+      "post": {
+        "summary": "Assign a role to a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "description": "ID of the user"
+                  },
+                  "role_id": {
+                    "type": "integer",
+                    "description": "ID of the role"
+                  }
+                },
+                "required": ["user_id", "role_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role assigned to user successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Role 'Role Title' assigned to user 'User Name' successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user ID or role ID"
+          },
+          "500": {
+            "description": "Failed to assign role"
+          }
+        }
+      }
+    },
+    "/create_role_association_to_permission": {
+      "post": {
+        "summary": "Create an association between a role and a permission",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role_id": {
+                    "type": "integer",
+                    "description": "ID of the role"
+                  },
+                  "permission_id": {
+                    "type": "integer",
+                    "description": "ID of the permission"
+                  }
+                },
+                "required": ["role_id", "permission_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role permission association created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Role permission association created successfully"
+                    },
+                    "role_id": {
+                      "type": "integer"
+                    },
+                    "permission_id": {
+                      "type": "integer"
+                    }
                   }
                 }
               }
             }
           },
           "500": {
-            "description": "Error creating message"
+            "description": "Failed to create role permission association"
+          }
+        }
+      }
+    },
+    "/get_roles_for_permissions/{permission_id}": {
+      "get": {
+        "summary": "Get roles associated with a specific permission",
+        "parameters": [
+          {
+            "name": "permission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the permission"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of roles associated with the permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "role_id": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No roles found for the given permission"
+          },
+          "500": {
+            "description": "Failed to fetch roles"
+          }
+        }
+      }
+    },
+    "/get_permission_for_roles/{role_id}": {
+      "get": {
+        "summary": "Get permissions associated with a specific role",
+        "parameters": [
+          {
+            "name": "role_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the role"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of permissions associated with the role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "permission_id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No permissions found for the given role"
+          },
+          "500": {
+            "description": "Failed to fetch permissions"
+          }
+        }
+      }
+    },
+    "/search/channel/{channel_id}": {
+      "get": {
+        "summary": "Search messages in a channel",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the channel to search messages"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "keyword": {
+                    "type": "string",
+                    "description": "Keyword to search for in channel messages"
+                  }
+                },
+                "required": ["keyword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results from the channel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid keyword parameter"
+          },
+          "500": {
+            "description": "Server error while searching channel messages"
+          }
+        }
+      }
+    },
+    "/search/direct/{receiver_id}": {
+      "get": {
+        "summary": "Search direct messages with a specific user",
+        "parameters": [
+          {
+            "name": "receiver_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the receiver to search direct messages"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "keyword": {
+                    "type": "string",
+                    "description": "Keyword to search for in direct messages"
+                  }
+                },
+                "required": ["keyword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results from direct messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid keyword parameter"
+          },
+          "500": {
+            "description": "Server error while searching direct messages"
+          }
+        }
+      }
+    },
+    "/create_message_thread": {
+      "post": {
+        "summary": "Create a new message thread",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "thread_type": {
+                    "type": "string",
+                    "description": "Type of the thread (e.g., 'channel', 'direct')"
+                  },
+                  "channel_message_id": {
+                    "type": "integer",
+                    "description": "ID of the channel message if thread is in a channel"
+                  },
+                  "direct_message_id": {
+                    "type": "integer",
+                    "description": "ID of the direct message if thread is in a direct message"
+                  },
+                  "thread_suggestion": {
+                    "type": "string",
+                    "description": "Suggestion or context for the thread"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Content of the initial message in the thread"
+                  }
+                },
+                "required": ["thread_type", "content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Thread message created successfully"
+          },
+          "404": {
+            "description": "Failed to create thread message"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/get_thread_messages_channel_id/{channel_message_id}": {
+      "get": {
+        "summary": "Get thread messages by channel message ID",
+        "parameters": [
+          {
+            "name": "channel_message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the channel message to fetch thread messages for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of thread messages for the specified channel message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "thread_type": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "thread_suggestion": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No thread message data found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/get_thread_messages_direct_id/{receiver_id}": {
+      "get": {
+        "summary": "Get thread messages by direct message receiver ID",
+        "parameters": [
+          {
+            "name": "receiver_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Receiver ID to fetch thread messages for direct messages"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of thread messages for the specified direct message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "thread_type": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "thread_suggestion": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No thread message data found"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }

@@ -29,7 +29,7 @@ async def create_message_direct(sender_id):
         return jsonify({"error": "Server error"}), 500
 
 
-@direct_message_routes.route("/delete_channel_message/<direct_message_id>", methods=["DELETE"])
+@direct_message_routes.route("/delete_direct_message/<direct_message_id>", methods=["DELETE"])
 async def delete_channel_message(direct_message_id):
     try:
         deleted_message = await direct_message_manager.delete_direct_message(direct_message_id)
