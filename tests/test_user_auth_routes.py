@@ -81,6 +81,21 @@ class TestUserAuth(unittest.TestCase):
         self.assertIn("Failed to login user", response.get_data(as_text=True))
 
 
+    @patch("app.routes.auth_routes.unset_jwt_cookies")
+    async def test_logout(self, mock_unset_jwt_cookies):
+        mock_unset_jwt_cookies.side_effect = lambda response: response
+
+        response = await self.client.post("/api/logout")
+
+        self.assertEqual(response.status_code, 200) 
+        response_data = response.get_json()
+        self.assertIn("message", response_data)
+        self.assertEqual(response_data["message"], "Logout successful")
+
+        mock_unset_jwt_cookies.assert_called_once()
+
+
+
 
 
 
