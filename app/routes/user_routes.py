@@ -55,7 +55,7 @@ async def delete_user(user_id):
         if delete_user:
             return jsonify({"success": "User deleted successfully"}), 200
         else:
-            return jsonify({"error": "User not found"})
+            return jsonify({"error": "User not found"}), 404 
     except Exception as e:
         print(f"Error deleting user data: {e}")
         return jsonify({"error": "Failed to delete user data"}), 500
@@ -120,6 +120,12 @@ async def register_user():
         print(f"Error creating user: {e}")
         return jsonify({"error": "Failed to create user"}), 500
 
+
+@user_routes.route("/test_jwt", methods=["GET"])
+@jwt_required()
+def test_jwt():
+    user_identity = get_jwt_identity()
+    return jsonify({"identity": user_identity}), 200
 
 
 
