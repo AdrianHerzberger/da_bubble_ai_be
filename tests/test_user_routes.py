@@ -12,7 +12,7 @@ class TestUser(unittest.TestCase):
     def setUpClass(cls):
         cls.app = Flask(__name__)
         cls.app.register_blueprint(user_routes)
-        cls.app.config["JWT_SECRET_KEY"] = Config.super_secret
+        cls.app.config["JWT_SECRET_KEY"] = Config.JWT_SECRET_KEY
         cls.app.config["JWT_TOKEN_LOCATION"] = ["headers"]
         cls.app.config["JWT_HEADER_NAME"] = "Authorization" 
         cls.app.config["JWT_HEADER_TYPE"] = "Bearer"

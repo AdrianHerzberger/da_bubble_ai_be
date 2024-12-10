@@ -1,7 +1,7 @@
 import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch, MagicMock
 from flask import Flask
-from app.routes.user_routes import user_routes
+from app.routes.auth_routes import auth_routes
 from flask_jwt_extended import JWTManager
 from config import Config
 
@@ -11,8 +11,8 @@ class TestUserAuth(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = Flask(__name__)
-        cls.app.register_blueprint(user_routes)
-        cls.app.config["JWT_SECRET_KEY"] = Config.super_secret
+        cls.app.register_blueprint(auth_routes) 
+        cls.app.config["JWT_SECRET_KEY"] = Config.JWT_SECRET_KEY
         cls.app.config["JWT_TOKEN_LOCATION"] = ["headers"]
         cls.app.config["JWT_HEADER_NAME"] = "Authorization" 
         cls.app.config["JWT_HEADER_TYPE"] = "Bearer"
@@ -63,7 +63,7 @@ class TestUserAuth(unittest.TestCase):
         }
 
         response = await self.client.post("/login", json=payload)
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 401)
         self.assertIn("Failed to login user", response.get_data(as_text=True))
 
 
