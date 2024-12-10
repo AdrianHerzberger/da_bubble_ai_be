@@ -6,7 +6,7 @@ from flask_jwt_extended import JWTManager
 from config import Config
 
 
-class TestUserStorage(unittest.TestCase):
+class TestUser(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
