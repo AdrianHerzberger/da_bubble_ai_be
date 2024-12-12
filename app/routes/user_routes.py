@@ -74,7 +74,7 @@ async def update_user(user_id):
             return jsonify({"error": "User authentication not valid!"}), 401
         update_user_name = await user_data_manager.update_user(user_id, user_name_update)
         if update_user_name:
-            return jsonify({"error": "User data updated sucessfully"})
+            return jsonify({"message": "User updated successfully"}), 200
         else:
             return jsonify({"error": "User not found"})
     except Exception as e:
@@ -120,12 +120,6 @@ async def register_user():
         print(f"Error creating user: {e}")
         return jsonify({"error": "Failed to create user"}), 500
 
-
-@user_routes.route("/test_jwt", methods=["GET"])
-@jwt_required()
-def test_jwt():
-    user_identity = get_jwt_identity()
-    return jsonify({"identity": user_identity}), 200
 
 
 
