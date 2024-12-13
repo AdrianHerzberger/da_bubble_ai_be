@@ -46,7 +46,7 @@ async def get_channel_by_id(channel_id):
                 "channel_name": channel.channel_name,
                 "channel_description": channel.channel_description,
                 "channel_color": channel.channel_color,
-            })
+            }), 200
         else:
             return jsonify({"error": "Channel not found"}), 404
     except Exception as e:
