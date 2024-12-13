@@ -3,6 +3,7 @@ from ..storage.channel_message_data_manager import ChannelMessageDataManager
 from ..utils.pagination_offset import PaginationOffset
 from ..models.channel_message_model import ChannelMessage
 from ..configuartions.channel_message_serializer import ChannelMessageSerializer
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageDataManager()
@@ -21,7 +22,10 @@ async def create_message_channel(channel_id):
         new_message = await channel_message_manager.create_message(channel_id, sender_id, content)
 
         if new_message:
-            return jsonify({"message": "Message created successfully"}), 201
+            return jsonify({
+                "message": "Message created successfully",
+                "message_id": new_message.id
+            }), 201
         else:
             return jsonify({"error": "Failed to create message"}), 404
 
@@ -31,8 +35,12 @@ async def create_message_channel(channel_id):
 
 
 @channel_message_routes.route("/delete_channel_message/<channel_message_id>", methods=["DELETE"])
+@jwt_required()
 async def delete_channel_message(channel_message_id):
     try:
+        user_auth = get_jwt_identity()
+        if not user_auth:
+            return jsonify({"error": "User authentication not valid!"}), 401
         deleted_message = await channel_message_manager.delete_channel_message(channel_message_id)
         if deleted_message:
             return jsonify({"success": "Channel message deleted successfully"}), 200
@@ -44,11 +52,15 @@ async def delete_channel_message(channel_message_id):
 
 
 @channel_message_routes.route("/update_channel_message/<channel_message_id>", methods=["PATCH"])
+@jwt_required()
 async def update_channel_message(channel_message_id):
     data = request.get_json()
     message_content_update = data.get("update_content")
 
     try:
+        user_auth = get_jwt_identity()
+        if not user_auth:
+            return jsonify({"error": "User authentication not valid!"}), 401
         update_message = await channel_message_manager.update_channel_message(channel_message_id, message_content_update)
         if update_message:
             return jsonify({"success": "Channel message updated successfully"})
