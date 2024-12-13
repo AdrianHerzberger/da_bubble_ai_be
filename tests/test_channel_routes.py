@@ -21,7 +21,7 @@ class ChannelTest(unittest.TestCase):
 
 
     @patch("app.routes.channel_routes.ChannelDataManager.create_channel", new_callable=AsyncMock)
-    @patch("app.routes.channel_routes.channel_user_association_manager.create_channel_user_association", new_callable=AsyncMock)
+    @patch("app.routes.channel_routes.ChannelUserAssociationManager.create_channel_user_association", new_callable=AsyncMock)
     def test_create_channel(self, mock_create_channel_user_association, mock_create_channel):
         with self.app.app_context():
             access_token = create_access_token(identity="test_user")
@@ -74,9 +74,50 @@ class ChannelTest(unittest.TestCase):
         mock_get_channel_by_id.assert_awaited_once_with("0ea65395-5342-4a34-b329-ead94ce446a5")
 
 
-
+    @patch("app.routes.channel_routes.ChannelDataManager.get_all_channels")
+    def test_get_all_channels(self, mock_get_all_channels):
         
+        mock_channels = [
+            {
+                "channel_id": "2fb515b9-d052-43e0-a196-bc8c3289fe06",
+                "channel_name": "General",
+                "channel_description": "General discussion",
+                "channel_color": "blue"
+            },
+            {
+                "channel_id": "bb919724-f17b-45d0-a84a-6327e1726b05",
+                "channel_name": "Announcements",
+                "channel_description": "Official announcements",
+                "channel_color": "red"
+            }
+        ]
 
+        mock_get_all_channels.return_value = mock_channels
 
+        response = self.client.get(f"/get_all_channels")
+
+        self.assertEqual(response.status_code, 200)
+        expected_data = [
+            {
+                "channel_id": "2fb515b9-d052-43e0-a196-bc8c3289fe06",
+                "channel_name": "General",
+                "channel_description": "General discussion",
+                "channel_color": "blue"
+            },
+            {
+                "channel_id": "bb919724-f17b-45d0-a84a-6327e1726b05",
+                "channel_name": "Announcements",
+                "channel_description": "Official announcements",
+                "channel_color": "red"
+            }
+        ]
+        self.assertEqual(response.json, expected_data)
+
+    @patch("app.routes.channel_routes.ChannelDataManager.get_all_channels")
+    def test_get_all_channels_no_channels(self, mock_get_all_channels):
+        mock_get_all_channels.return_value = []
+        response = self.client.get("/get_all_channels")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json, {"error": "Channel data not found"})
 
 
