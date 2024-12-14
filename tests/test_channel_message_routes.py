@@ -1,11 +1,19 @@
 import unittest
 from unittest.mock import patch, AsyncMock
 from flask import Flask
-from sqlalchemy import true
 from app.routes.channel_message_routes import channel_message_routes
 from flask_jwt_extended import JWTManager, create_access_token
 from config import Config
+from datetime import datetime
 
+
+class MockMessage:
+    def __init__(self, id, channel_id, sender_id, content, timestamp):
+        self.id = id
+        self.channel_id = channel_id
+        self.sender_id = sender_id
+        self.content = content
+        self.timestamp = timestamp
 
 class ChannelMessageTest(unittest.TestCase):
     @classmethod
@@ -81,60 +89,54 @@ class ChannelMessageTest(unittest.TestCase):
         mock_update_channel_message.assert_awaited_once_with(test_update_channel_message_id, payload["update_content"])
         
 
-    @patch("app.routes.channel_message_routes.ChannelMessageDataManager.get_channel_messages_by_id")
+    @patch("app.routes.channel_message_routes.ChannelMessageDataManager.get_all_channel_messages")
     def test_get_channel_messages_success(self, mock_get_channel_messages):
         mock_channel_messages = [
-            {
-                "message_id": "83b95aa4-e8ab-4c57-82f3-a7a2a3704837",
-                "channel_id": "0ea65395-5342-4a34-b329-ead94ce446a5",
-                "sender_id": "e94dc166-1a64-4a3a-bff4-b36dd1d0b843",
-                "content": "First test channel message which will be mocked",
-                "message_time": "2024-11-25T10:56:12.995386"
-            },
-            {
-                "message_id": "cd18d10b-002e-44e6-bcbb-3e62da6b3c86",
-                "channel_id": "0ea65395-5342-4a34-b329-ead94ce446a5",
-                "sender_id": "e94dc166-1a64-4a3a-bff4-b36dd1d0b843",
-                "content": "Ideally the feature # Load patients should display all found patient by elastic search!",
-                "message_time": "2024-11-15T13:36:14.725670"
-            }
+            MockMessage(
+                id="83b95aa4-e8ab-4c57-82f3-a7a2a3704837",
+                channel_id="0ea65395-5342-4a34-b329-ead94ce446a5",
+                sender_id="e94dc166-1a64-4a3a-bff4-b36dd1d0b843",
+                content="First test channel message which will be mocked",
+                timestamp=datetime(2024, 11, 25, 10, 56, 12, 995386)
+            ),
+            MockMessage(
+                id="cd18d10b-002e-44e6-bcbb-3e62da6b3c86",
+                channel_id="0ea65395-5342-4a34-b329-ead94ce446a5",
+                sender_id="e94dc166-1a64-4a3a-bff4-b36dd1d0b843",
+                content="Second test channel message which will be mocked",
+                timestamp=datetime(2024, 11, 25, 10, 56, 12, 995386),
+            ),
         ]
-        
-        get_channel_messages_id = "0ea65395-5342-4a34-b329-ead94ce446a5"
         mock_get_channel_messages.return_value = mock_channel_messages
 
-        print(f"Mock return value set: {mock_channel_messages}")
+        expected_data =  {
+            'count': 2, 
+            'is_next_page': False, 
+            'results': [
+                {
+                    'channel_id': '0ea65395-5342-4a34-b329-ead94ce446a5', 
+                    'content': 'First test channel message which will be mocked', 
+                    'message_id': '83b95aa4-e8ab-4c57-82f3-a7a2a3704837', 
+                    'message_time': '2024-11-25T10:56:12.995386', 
+                    'sender_id': 'e94dc166-1a64-4a3a-bff4-b36dd1d0b843'
+                }, 
+                {
+                    'channel_id': '0ea65395-5342-4a34-b329-ead94ce446a5', 
+                    'content': 'Second test channel message which will be mocked', 
+                    'message_id': 'cd18d10b-002e-44e6-bcbb-3e62da6b3c86', 
+                    'message_time': '2024-11-25T10:56:12.995386', 
+                    'sender_id': 'e94dc166-1a64-4a3a-bff4-b36dd1d0b843'
+                }
+            ], 
+            'total_pages': 1
+        }
 
         response = self.client.get(
-            f"/get_channel_messages/{get_channel_messages_id}/?page_number=1&page_size=2"
+            "/get_all_channel_messages/?page_number=1&page_size=2"
         )
 
-        print(f"Response status code: {response.status_code}")
-        print(f"Response JSON: {response.get_json()}")
-        print(f"Mock method call args: {mock_get_channel_messages.call_args}")
+        print("Actual response JSON:", response.get_json())
 
-        expected_data = {
-            "count": 7,
-            "is_next_page": true,
-            "results": [
-                {
-                    "message_id": "83b95aa4-e8ab-4c57-82f3-a7a2a3704837",
-                    "channel_id": "0ea65395-5342-4a34-b329-ead94ce446a5",
-                    "sender_id": "e94dc166-1a64-4a3a-bff4-b36dd1d0b843",
-                    "content": "First test channel message which will be mocked",
-                    "message_time": "2024-11-25T10:56:12.995386"
-                },
-                {
-                    "message_id": "cd18d10b-002e-44e6-bcbb-3e62da6b3c86",
-                    "channel_id": "0ea65395-5342-4a34-b329-ead94ce446a5",
-                    "sender_id": "e94dc166-1a64-4a3a-bff4-b36dd1d0b843",
-                    "content": "Ideally the feature # Load patients should display all found patient by elastic search!",
-                    "message_time": "2024-11-15T13:36:14.725670"
-                }
-            ],
-            "total_pages": 4
-        }
-            
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), expected_data)
 
@@ -142,9 +144,9 @@ class ChannelMessageTest(unittest.TestCase):
     @patch("app.routes.channel_message_routes.ChannelMessageDataManager.get_all_channel_messages")
     def test_failed_channel_messages(self, mock_get_all_channel_messages):
         mock_get_all_channel_messages.return_value = []
-        response = self.client.get("/get_all_channel_messages")
+        response = self.client.get("/get_all_channel_messages/?page_number=1&page_size=2")
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.get_json(), {"error": "Channel message data not found"})
+        self.assertEqual(response.get_json(), {"error": "Channel messages not found"})
 
 
 

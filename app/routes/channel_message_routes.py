@@ -4,6 +4,7 @@ from ..utils.pagination_offset import PaginationOffset
 from ..models.channel_message_model import ChannelMessage
 from ..configuartions.channel_message_serializer import ChannelMessageSerializer
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import pprint
 
 channel_message_routes = Blueprint("channel_message_routes", __name__)
 channel_message_manager = ChannelMessageDataManager()
@@ -71,7 +72,7 @@ async def update_channel_message(channel_message_id):
         return jsonify({"error": "Failed to update channel message data"}), 500
 
 
-@channel_message_routes.route("/get_channel_messages/<channel_id>", methods=["GET"])
+@channel_message_routes.route("/get_channel_messages/<channel_id>/", methods=["GET"])
 async def get_channel_messages(channel_id):
     try: 
         channel_messages = await channel_message_manager.get_channel_messages_by_id(channel_id)
