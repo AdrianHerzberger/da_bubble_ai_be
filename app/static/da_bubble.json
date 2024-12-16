@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://da-bubble-ai-be-1.onrender.com/api",
+      "url": "https://da-bubble-ai-be-v1.onrender.com/api",
       "description": "Production server"
     }
   ],
