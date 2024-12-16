@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from contextlib import asynccontextmanager
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = Config.SQLALCHEMY_DATABASE_URL
+DATABASE_URL = Config.RENDER_DATA_BASE_URL
 
 async_engine = create_async_engine(
     DATABASE_URL,

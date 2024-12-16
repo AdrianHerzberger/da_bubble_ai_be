@@ -3,12 +3,13 @@ services:
   flask-app:
     build: .
     ports:
-      - "5001:5001"
+      # - "5001:5001"
+      - 5000:5000
     depends_on:
       - elasticsearch
     environment:
       - ELASTIC_SEARCH_HOST=http://elasticsearch:9200
-      - ELASTIC_KEY=my_password
+      #- ELASTIC_KEY=my_password
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
     volumes:
@@ -17,6 +18,6 @@ services:
       - xpack.security.http.ssl.enabled=false
       - xpack.security.enabled=false
       - discovery.type=single-node
-      - ELASTIC_PASSWORD=my_password
+      #- ELASTIC_PASSWORD=my_password
     ports:
       - "9200:9200"

@@ -16,7 +16,6 @@ from .routes.channel_message_summarization_routes import channel_message_summari
 from .routes.permission_routes import permission_routes
 from .routes.role_permission_association_routes import role_permission_association_routes
 from config import Config
-import platform
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -46,5 +45,3 @@ app.register_blueprint(permission_routes, url_prefix="/api")
 app.register_blueprint(role_permission_association_routes, url_prefix="/api")
 app.register_blueprint(channel_message_summarization_routes, url_prefix="/api")
 
-# if platform.system() == "Windows":
-#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
