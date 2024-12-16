@@ -184,6 +184,87 @@
         }
       }
     },
+    "/register_user": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Endpoint to register a new user by providing their email, name, and password.",
+        "operationId": "registerUser",
+        "requestBody": {
+          "description": "JSON payload containing the user's email, name, and password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com",
+                    "description": "The email of the user"
+                  },
+                  "user_name": {
+                    "type": "string",
+                    "example": "John Doe",
+                    "description": "The name of the user"
+                  },
+                  "user_password": {
+                    "type": "string",
+                    "example": "mypassword123",
+                    "description": "The password for the user"
+                  }
+                },
+                "required": ["user_email", "user_name", "user_password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "12345",
+                      "description": "Unique identifier for the user"
+                    },
+                    "user_email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "user@example.com"
+                    },
+                    "user_name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to create user"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/get_user_by_id/{user_id}": {
       "get": {
         "summary": "Get user by ID",
