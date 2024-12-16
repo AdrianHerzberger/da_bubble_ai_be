@@ -20,7 +20,7 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "https://da-bubble-ai-be-v1.onrender.com"}})
 asgi_app = WsgiToAsgi(app)
 jwt = JWTManager(app)
 
