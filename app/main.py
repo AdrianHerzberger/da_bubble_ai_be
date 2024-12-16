@@ -1,6 +1,7 @@
 import asyncio
 from flask import Flask, redirect
 from asgiref.wsgi import WsgiToAsgi
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_swagger_ui import get_swaggerui_blueprint
 from .routes.user_routes import user_routes
@@ -19,6 +20,7 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+CORS(app)
 asgi_app = WsgiToAsgi(app)
 jwt = JWTManager(app)
 
